@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import MetaTrader5 as mt5
+# Importar configuraciones y logging.
 from configuracion.config_loader import ConfigLoader
 from log.log_loader import setup_logging
 import logging
