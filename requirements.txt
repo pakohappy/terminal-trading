@@ -1,0 +1,6 @@
+Metatrader5
+pandas
+numpy
+matplotlib
+scikit-learn
+scipy
