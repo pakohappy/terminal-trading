@@ -1,9 +1,11 @@
 import logging
 import os
+from logging.handlers import RotatingFileHandler
 
-def setup_logging(log_folder="c:/Users/pako_/Documents/GitHub/trading/logs", log_file="bot.log"):
+def setup_logging(log_folder="logs", log_file="bot.log", max_bytes=5 * 1024 * 1024, backup_count=15):
     """
     Configura un sistema de logging exhaustivo con múltiples manejadores.
+    Incluye rotación de archivos de log cuando alcanzan un tamaño máximo.
 
     Mejoras en el sistema de logging:
     Múltiples manejadores (handlers):
@@ -21,12 +23,24 @@ def setup_logging(log_folder="c:/Users/pako_/Documents/GitHub/trading/logs", log
     ERROR: Errores que afectan la ejecución.
     CRITICAL: Errores graves que requieren atención inmediata.
 
+    Parámetros:
+    - log_folder: Carpeta donde se guardarán los logs.
+    - log_file: Nombre base del archivo de log.
+    - max_bytes: Tamaño máximo del archivo de log en bytes antes de rotar (por defecto 5 MB).
+    - backup_count: Número máximo de archivos de respaldo que se mantendrán.
     """
+    
+    # Obtener la ruta absoluta del directorio base del proyecto
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Construir la ruta completa de la carpeta de logs
+    log_folder_path = os.path.join(base_dir, log_folder)
+
     # Crear la carpeta de logs si no existe
-    os.makedirs(log_folder, exist_ok=True)
+    os.makedirs(log_folder_path, exist_ok=True)
     
     # Ruta completa del archivo de log
-    log_path = os.path.join(log_folder, log_file)
+    log_path = os.path.join(log_folder_path, log_file)
     
     # Crear un logger
     logger = logging.getLogger()
@@ -38,11 +52,13 @@ def setup_logging(log_folder="c:/Users/pako_/Documents/GitHub/trading/logs", log
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    # Manejador para archivo (archivo de log)
-    file_handler = logging.FileHandler(log_path)
-    file_handler.setLevel(logging.DEBUG)  # Nivel de detalle para el archivo
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    # Manejador para archivo con rotación
+    rotating_file_handler = RotatingFileHandler(
+        log_path, maxBytes=max_bytes, backupCount=backup_count
+    )
+    rotating_file_handler.setLevel(logging.DEBUG)  # Nivel de detalle para el archivo
+    rotating_file_handler.setFormatter(formatter)
+    logger.addHandler(rotating_file_handler)
 
     # Manejador para consola (salida estándar)
     console_handler = logging.StreamHandler()
@@ -52,27 +68,3 @@ def setup_logging(log_folder="c:/Users/pako_/Documents/GitHub/trading/logs", log
 
     # Mensaje inicial
     logger.info(">>> Sistema de logging configurado.")
-
-
-## Ejemplo de uso:
-# # -*- coding: utf-8 -*-
-# import MetaTrader5 as mt5
-# from configuracion.config_loader import ConfigLoader
-# from logging.logging_loader import setup_logging
-# import logging
-
-# # Configurar logging desde logging_loader
-# setup_logging()
-
-# logging.info("Iniciando el script de trading...")
-
-# # Iniciar conexión con MetaTrader 5
-# if not mt5.initialize():
-#     logging.error("Error al inicializar MetaTrader 5")
-#     print("Error al inicializar MetaTrader 5")
-#     mt5.shutdown()
-# else:
-#     logging.info("MetaTrader 5 inicializado correctamente.")
-#     # Aquí puedes agregar más lógica para tu bot de trading
-#     mt5.shutdown()
-#     logging.info("MetaTrader 5 cerrado correctamente.")
