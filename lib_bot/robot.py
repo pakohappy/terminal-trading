@@ -50,7 +50,7 @@ class Robot:
     
         while True:
             print("\n### Submenú Metatrader 5 ###")
-            print("1. Configurar Robot")
+            print("1. Información de la cuenta")
             print("2. Iniciar Robot")
             print("3. Volver al Menú Principal")
             opcion = input(">>> Selecciona una opción (1-3): ")
@@ -104,14 +104,10 @@ class Robot:
         print(">>> Ejecutando el robot")
         # Aquí puedes agregar la lógica para ejecutar el robot
     
+    # Muestra información de la cuenta.
     def info_cuenta(self):
-        """
-        Muestra información de la cuenta.
-        """
         mt5 = MT5Connector()
-        print(mt5.account_info())
-        print(">>> Información de la cuenta")
-        # Aquí puedes agregar la lógica para mostrar información de la cuenta
+        print(mt5.info_cuenta())
 
     def info_terminal(self):
         """
