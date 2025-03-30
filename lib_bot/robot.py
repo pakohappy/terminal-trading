@@ -1,3 +1,5 @@
+from lib_bot.mt5_connector import MT5Connector
+
 class Robot:
     def __init__(self):
         """
@@ -106,6 +108,8 @@ class Robot:
         """
         Muestra información de la cuenta.
         """
+        mt5 = MT5Connector()
+        print(mt5.account_info())
         print(">>> Información de la cuenta")
         # Aquí puedes agregar la lógica para mostrar información de la cuenta
 
