@@ -18,13 +18,12 @@ setup_logging()
 
 logging.info("Iniciando el script de trading...")
 
-# Iniciar conexión con MetaTrader 5
+# Iniciar conexión con MetaTrader5.
 if not mt5.initialize(login=login, password=password, server=server):
     # Si no se puede conectar, registrar el error y cerrar la conexión.
-    logging.error("Error al inicializar MetaTrader 5")
+    logging.error("Error al inicializar MetaTrader5")
     mt5.shutdown()
+    logging.info("MetaTrader5 cerrado correctamente.")
 else:
-    logging.info("MetaTrader 5 inicializado correctamente.")
-    # Aquí puedes agregar más lógica para tu bot de trading
-    mt5.shutdown()
-    logging.info("MetaTrader 5 cerrado correctamente.")
+    logging.info("MetaTrader5 inicializado correctamente.")
+    
