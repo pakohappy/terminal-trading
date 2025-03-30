@@ -1,29 +1,19 @@
-# -*- coding: utf-8 -*-
-import MetaTrader5 as mt5
-# Importar configuraciones y logging.
-from configuracion.config_loader import ConfigLoader
-from log.log_loader import setup_logging
+from lib_bot.mt5_connector import MT5Connector
+from log.log_loader import setup_logging  # Importar la configuración de logging
 import logging
 
-# Cargar configuraciones desde config_loader.
-config = ConfigLoader('configuracion\config.ini')
-
-# Datos de conexión a MetaTrader 5.
-login = config.get_int('metatrader', 'login')
-password = config.get('metatrader', 'password')
-server = config.get('metatrader', 'server')
-
-# Configurar logging desde logging_loader
+# Configurar logging desde log_loader
 setup_logging()
 
-logging.info("Iniciando el script de trading...")
+try:
+    # Crear una instancia de MT5Connector
+    mt5_connector = MT5Connector()
 
-# Iniciar conexión con MetaTrader5.
-if not mt5.initialize(login=login, password=password, server=server):
-    # Si no se puede conectar, registrar el error y cerrar la conexión.
-    logging.error("Error al inicializar MetaTrader5")
-    mt5.shutdown()
-    logging.info("MetaTrader5 cerrado correctamente.")
-else:
-    logging.info("MetaTrader5 inicializado correctamente.")
-    
+    # Aquí puedes agregar lógica para realizar operaciones con MetaTrader 5
+    logging.info("Conexión establecida con MetaTrader 5")
+
+    # Cerrar la conexión al finalizar
+    mt5_connector.shutdown()
+
+except ConnectionError as e:
+    logging.error(f"Error de conexión: {e}")
