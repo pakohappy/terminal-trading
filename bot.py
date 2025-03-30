@@ -7,13 +7,13 @@ setup_logging()
 
 try:
     # Crear una instancia de MT5Connector
-    mt5_connector = MT5Connector()
+    mt5 = MT5Connector()
 
     # Aquí puedes agregar lógica para realizar operaciones con MetaTrader 5
     logging.info("Conexión establecida con MetaTrader 5")
 
     # Cerrar la conexión al finalizar
-    mt5_connector.shutdown()
+    mt5.shutdown()
 
 except ConnectionError as e:
     logging.error(f"Error de conexión: {e}")
