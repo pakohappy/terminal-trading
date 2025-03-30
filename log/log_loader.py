@@ -1,8 +1,11 @@
 import logging
 import os
-from logging.handlers import RotatingFileHandler
+# from logging.handlers import RotatingFileHandler
 
-def setup_logging(log_folder="logs", log_file="bot.log", max_bytes=5 * 1024 * 1024, backup_count=15):
+# def setup_logging(log_folder="logs", log_file="bot.log", max_bytes=5 * 1024 * 1024, backup_count=15):
+from logging.handlers import TimedRotatingFileHandler
+
+def setup_logging(log_folder="logs", log_file="bot.log", when="midnight", interval=1, backup_count=15):
     """
     Configura un sistema de logging exhaustivo con múltiples manejadores.
     Incluye rotación de archivos de log cuando alcanzan un tamaño máximo.
@@ -52,13 +55,21 @@ def setup_logging(log_folder="logs", log_file="bot.log", max_bytes=5 * 1024 * 10
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    # Manejador para archivo con rotación
-    rotating_file_handler = RotatingFileHandler(
-        log_path, maxBytes=max_bytes, backupCount=backup_count
+    # # Manejador para archivo con rotación
+    # rotating_file_handler = RotatingFileHandler(
+    #     log_path, maxBytes=max_bytes, backupCount=backup_count
+    # )
+    # rotating_file_handler.setLevel(logging.DEBUG)  # Nivel de detalle para el archivo
+    # rotating_file_handler.setFormatter(formatter)
+    # logger.addHandler(rotating_file_handler)
+    
+    # Manejador para archivo con rotación diaria
+    timed_file_handler = TimedRotatingFileHandler(
+        log_path, when=when, interval=interval, backupCount=backup_count
     )
-    rotating_file_handler.setLevel(logging.DEBUG)  # Nivel de detalle para el archivo
-    rotating_file_handler.setFormatter(formatter)
-    logger.addHandler(rotating_file_handler)
+    timed_file_handler.setLevel(logging.DEBUG)  # Nivel de detalle para el archivo
+    timed_file_handler.setFormatter(formatter)
+    logger.addHandler(timed_file_handler)
 
     # Manejador para consola (salida estándar)
     console_handler = logging.StreamHandler()
