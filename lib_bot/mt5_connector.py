@@ -21,10 +21,8 @@ class MT5Connector:
         else:
             logging.info("MetaTrader 5 inicializado correctamente")
 
+    # Cierra la conexión con MetaTrader 5.
     def shutdown(self):
-        """
-        Cierra la conexión con MetaTrader 5.
-        """
         mt5.shutdown()
         logging.info("MetaTrader 5 cerrado correctamente")
 
@@ -32,19 +30,26 @@ class MT5Connector:
     def info_cuenta(self):
         account = mt5.account_info()
         if account!=None:
-            # display trading account data 'as is'
-            # print(account)
-            # display trading account data in the form of a dictionary
-            # print("Show account_info()._asdict():")
             account_info_dict = mt5.account_info()._asdict()
-            # for prop in account_info_dict:
-            #     print("  {}={}".format(prop, account_info_dict[prop]))
-            # print()
     
-            # convert the dictionary into DataFrame and print
+            # Convertir la información de la cuenta a un diccionario.
             df=pd.DataFrame(list(account_info_dict.items()),columns=['property','value'])
             print("\n### Información de la cuenta como dataframe:")
             print(df)
         else:
             logging.error("Error al obtener información de la cuenta.")
             raise ConnectionError("No se pudo obtener información de la cuenta")
+        
+    # Devulve la información de la terminal.
+    def info_terminal(self):
+        terminal = mt5.terminal_info()
+        if terminal!=None:
+            terminal_info_dict = mt5.terminal_info()._asdict()
+    
+            # Convertir la información de la cuenta a un diccionario.
+            df=pd.DataFrame(list(terminal_info_dict.items()),columns=['property','value'])
+            print("\n### Información de la terminal como dataframe:")
+            print(df)
+        else:
+            logging.error("Error al obtener información de la terminal.")
+            raise ConnectionError("No se pudo obtener información de la terminal")

@@ -69,10 +69,8 @@ class Robot:
         """
         print(">>> Volviendo al menú principal...")
 
+    # Finalizar el robot y salir del programa.
     def salir(self):
-        """
-        Finaliza el programa.
-        """
         print(">>> Saliendo del programa...")
         self.ejecutando = False
     
@@ -109,10 +107,8 @@ class Robot:
         mt5 = MT5Connector()
         print(mt5.info_cuenta())
 
+    # Muestra información de la terminal.
     def info_terminal(self):
-        """
-        Muestra información de la terminal.
-        """
-        print(">>> Información de la terminal")
-        # Aquí puedes agregar la lógica para mostrar información de la terminal
+        mt5 = MT5Connector()
+        print(mt5.info_terminal())
     
