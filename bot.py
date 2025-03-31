@@ -1,7 +1,8 @@
 from lib_bot.mt5_connector import MT5Connector
 from log.log_loader import setup_logging  # Importar la configuración de logging
 import logging
-from lib_bot.robot import Robot
+from lib_bot.menu import Menu
+
 
 # Configurar logging desde log_loader
 setup_logging()
@@ -14,7 +15,7 @@ try:
     logging.info("Conexión establecida con MetaTrader 5")
 
     # Ejecutar menú principal del bot.
-    robot = Robot()
+    robot = Menu()
     robot.ejecutar()
 
     # Cerrar la conexión al finalizar

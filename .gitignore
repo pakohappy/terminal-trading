@@ -174,5 +174,5 @@ cython_debug/
 .vscode/*.code-workspace.code-workspace.user.json
 
 # Archivos de carpeta configuración.
-config.ini
-configuracion/config.ini
+# config.ini
+# configuracion/config.ini
