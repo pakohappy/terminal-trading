@@ -21,8 +21,8 @@ class Robot:
         print("\n### Menú Principal ###")
         print("1 - Metatrader 5.")
         print("2 - Configuración.")
-        print("3 - Ayuda.")
-        print("4 - Ejecutar Robot.")
+        print("3 - Ejecutar Robot.")
+        print("4 - Ayuda.")
         print("S - Salir.")
 
     def ejecutar(self):
@@ -50,9 +50,9 @@ class Robot:
     
         while True:
             print("\n### Submenú Metatrader 5 ###")
-            print("1. Información de la cuenta")
-            print("2. Iniciar Robot")
-            print("3. Volver al Menú Principal")
+            print("1. Información de la cuenta.")
+            print("2. Información del terminal.")
+            print("3. Volver al Menú Principal.")
             opcion = input(">>> Selecciona una opción (1-3): ")
             accion = submenu_opciones.get(opcion)
             if accion:
