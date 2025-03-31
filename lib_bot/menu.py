@@ -133,9 +133,9 @@ class Menu:
     
         while True:
             print("\n### Submenú Metatrader 5 ###")
-            print("1. Información de la cuenta.")
-            print("2. Información del terminal.")
-            print("3. Volver al Menú Principal.")
+            print("[1] - Información de la cuenta.")
+            print("[2] - Información del terminal.")
+            print("[3] - Volver.")
             opcion = input(">>> Selecciona una opción (1-3): ")
             accion = submenu_opciones.get(opcion)
             if accion:
