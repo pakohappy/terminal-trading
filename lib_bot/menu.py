@@ -65,7 +65,7 @@ class Menu:
                 if opcion == "3":
                     break  # Salir del submenú y volver al menú principal
 
-    def modificar_configuracion(self):
+    def modificar_configuracion(self): #TODO: Mover a la carpeta configuracion.
         """
         Permite al usuario modificar la configuración del robot.
         """
@@ -99,7 +99,7 @@ class Menu:
 
         print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
 
-    def ver_configuracion(self):
+    def ver_configuracion(self): #TODO: Mover a la carpeta configuracion.
         """
         Muestra las configuraciones actuales del archivo config.ini.
         """
