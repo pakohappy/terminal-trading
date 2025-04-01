@@ -36,3 +36,48 @@ class ConfigLoader:
 # print(f"API Key: {api_key}")
 # print(f"Trading Symbol: {symbol}")
 # print(f"Lot Size: {lot_size}")
+
+    def escribir_configuracion(): # TODO: Añadir un try-except para manejar errores al escribir el archivo.
+        """
+        Permite al usuario modificar la configuración del robot.
+        """
+        config_path = "configuracion/config.ini"
+        config = configparser.ConfigParser()
+        config.read(config_path)
+
+        print("\n### Modificar Configuración ###")
+        print("Secciones disponibles:", list(config.sections()))
+        seccion = input(">>> Ingresa la sección que deseas modificar: ").strip()
+        if seccion not in config:
+            print(">>> La sección no existe.")
+            return
+
+        print("Claves disponibles en la sección:", list(config[seccion].keys()))
+        clave = input(">>> Ingresa la clave que deseas modificar: ").strip()
+        if clave not in config[seccion]:
+            print(">>> La clave no existe.")
+            return
+
+        nuevo_valor = input(f">>> Ingresa el nuevo valor para '{clave}': ").strip()
+        config[seccion][clave] = nuevo_valor
+
+        # Guardar los cambios en el archivo
+        with open(config_path, "w") as configfile:
+            config.write(configfile)
+
+        print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
+
+    def leer_configuracion():
+        """
+        Muestra las configuraciones actuales del archivo config.ini.
+        """
+        config_path = "configuracion/config.ini"
+        config = configparser.ConfigParser()
+        config.read(config_path)
+
+        print("\n### Configuración Actual ###")
+        for seccion in config.sections():
+            print(f"[{seccion}]")
+            for clave, valor in config[seccion].items():
+                print(f"{clave} = {valor}")
+            print()

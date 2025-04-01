@@ -1,5 +1,5 @@
 from lib_bot.mt5_connector import MT5Connector
-
+from configuracion.config_loader import ConfigLoader
 class Menu:
     def __init__(self):
         """
@@ -8,8 +8,7 @@ class Menu:
         self.opciones = {
             "1": self.meta_trader_5,
             "2": self.configuracion,
-            "3": self.ayuda,
-            "4": self.ejecutar_robot,
+            "3": self.ejecutar_robot,
             "S": self.salir
         }
         self.ejecutando = True
@@ -22,7 +21,6 @@ class Menu:
         print("[1] - Metatrader 5.")
         print("[2] - Configuración.")
         print("[3] - Ejecutar Robot.")
-        print("[4] - Ayuda.")
         print("[S] - Salir.")
 
     def ejecutar(self):
@@ -65,57 +63,13 @@ class Menu:
                 if opcion == "3":
                     break  # Salir del submenú y volver al menú principal
 
-    def modificar_configuracion(self): #TODO: Mover a la carpeta configuracion.
-        """
-        Permite al usuario modificar la configuración del robot.
-        """
-        # Cargar el archivo de configuración
-        from configuracion.config_loader import ConfigLoader
-        import configparser
+    def modificar_configuracion(self):
+        conf = ConfigLoader()
+        conf.escribir_configuracion()
 
-        config_path = "configuracion/config.ini"
-        config = configparser.ConfigParser()
-        config.read(config_path)
-
-        print("\n### Modificar Configuración ###")
-        print("Secciones disponibles:", list(config.sections()))
-        seccion = input(">>> Ingresa la sección que deseas modificar: ").strip()
-        if seccion not in config:
-            print(">>> La sección no existe.")
-            return
-
-        print("Claves disponibles en la sección:", list(config[seccion].keys()))
-        clave = input(">>> Ingresa la clave que deseas modificar: ").strip()
-        if clave not in config[seccion]:
-            print(">>> La clave no existe.")
-            return
-
-        nuevo_valor = input(f">>> Ingresa el nuevo valor para '{clave}': ").strip()
-        config[seccion][clave] = nuevo_valor
-
-        # Guardar los cambios en el archivo
-        with open(config_path, "w") as configfile:
-            config.write(configfile)
-
-        print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
-
-    def ver_configuracion(self): #TODO: Mover a la carpeta configuracion.
-        """
-        Muestra las configuraciones actuales del archivo config.ini.
-        """
-        from configuracion.config_loader import ConfigLoader
-        import configparser
-
-        config_path = "configuracion/config.ini"
-        config = configparser.ConfigParser()
-        config.read(config_path)
-
-        print("\n### Configuración Actual ###")
-        for seccion in config.sections():
-            print(f"[{seccion}]")
-            for clave, valor in config[seccion].items():
-                print(f"{clave} = {valor}")
-            print()
+    def ver_configuracion(self):
+        conf = ConfigLoader()
+        conf.leer_configuracion()
 
 ###############################################################################
 # Submenú Metatrader 5                                                        #
@@ -176,13 +130,6 @@ class Menu:
 
     def configuracion(self):
         self.submenu_configuracion()
-
-    def ayuda(self):
-        """
-        Muestra el submenú de ayuda.
-        """
-        print(">>> Submenú de Ayuda")
-        # Aquí puedes agregar opciones relacionadas con la ayuda del robot
 
     def ejecutar_robot(self):
         """
