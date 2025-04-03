@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import configparser
+import logging
 
 class ConfigLoader:
     def __init__(self, config_file='config.ini'):
@@ -41,31 +42,35 @@ class ConfigLoader:
         """
         Permite al usuario modificar la configuración del robot.
         """
-        config_path = "configuracion/config.ini"
-        config = configparser.ConfigParser()
-        config.read(config_path)
+        try:
+            config_path = "configuracion/config.ini"
+            config = configparser.ConfigParser()
+            config.read(config_path)
 
-        print("\n### Modificar Configuración ###")
-        print("Secciones disponibles:", list(config.sections()))
-        seccion = input(">>> Ingresa la sección que deseas modificar: ").strip()
-        if seccion not in config:
-            print(">>> La sección no existe.")
-            return
+            print("\n### Modificar Configuración ###")
+            print("Secciones disponibles:", list(config.sections()))
+            seccion = input(">>> Ingresa la sección que deseas modificar: ").strip()
+            if seccion not in config:
+                print(">>> La sección no existe.")
+                return
 
-        print("Claves disponibles en la sección:", list(config[seccion].keys()))
-        clave = input(">>> Ingresa la clave que deseas modificar: ").strip()
-        if clave not in config[seccion]:
-            print(">>> La clave no existe.")
-            return
+            print("Claves disponibles en la sección:", list(config[seccion].keys()))
+            clave = input(">>> Ingresa la clave que deseas modificar: ").strip()
+            if clave not in config[seccion]:
+                print(">>> La clave no existe.")
+                return
 
-        nuevo_valor = input(f">>> Ingresa el nuevo valor para '{clave}': ").strip()
-        config[seccion][clave] = nuevo_valor
+            nuevo_valor = input(f">>> Ingresa el nuevo valor para '{clave}': ").strip()
+            config[seccion][clave] = nuevo_valor
 
-        # Guardar los cambios en el archivo
-        with open(config_path, "w") as configfile:
-            config.write(configfile)
+            # Guardar los cambios en el archivo
+            with open(config_path, "w") as configfile:
+                config.write(configfile)
 
-        print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
+            logging.info(f"Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
+            print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
+        except:
+            logging.error(f"Error al escribir la configuración.")
 
     def leer_configuracion(self):
         """

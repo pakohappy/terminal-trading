@@ -1,9 +1,17 @@
 import logging
 import pandas as pd
+from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
     # Puedo optimizar pasando solo la columna close, pero no es necesario.
-    def __init__(self, df: pd.DataFrame, ): 
+    def __init__(self, df: pd.DataFrame, config_path='configuracion/config.ini'):
+
+        # Cargar configuraciones desde el archivo config.ini
+        self.config = ConfigLoader(config_path)
+        self.periodo_rapido = self.config.get_int('macd', 'periodo_lento')
+        self.periodo_lento = self.config.get_int('macd', 'periodo_rapido')
+        self.senyal = self.config.get_int('macd', 'senyal')
+
         self.df = df
 
     def macd(self) -> pd.DataFrame:
@@ -23,14 +31,14 @@ class Tendencia:
             raise ValueError("El DataFrame debe contener una columna 'Close' para calcular el MACD.")
 
         # Cálculo de las medias móviles.
-        df_ema12 = self.df['Close'].ewm(span=12, adjust=False).mean()
-        df_ema26 = self.df['Close'].ewm(span=26, adjust=False).mean()
+        df_ema12 = self.df['Close'].ewm(span=self.periodo_rapido, adjust=False).mean()
+        df_ema26 = self.df['Close'].ewm(span=self.periodo_lento, adjust=False).mean()
 
         # Cálculo del MACD.
         self.df['macd'] = df_ema12 - df_ema26
 
         # Cálculo de la señal (EMA de 9 periodos del MACD)
-        self.df['signal'] = self.df['macd'].ewm(span=9, adjust=False).mean()
+        self.df['signal'] = self.df['macd'].ewm(span=self.senyal, adjust=False).mean()
 
         # Detectar cruces alcistas. (posición larga)
         # La señal se considera alcista cuando el MACD cruza por encima de la señal.
