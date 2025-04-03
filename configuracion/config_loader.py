@@ -37,7 +37,7 @@ class ConfigLoader:
 # print(f"Trading Symbol: {symbol}")
 # print(f"Lot Size: {lot_size}")
 
-    def escribir_configuracion(): # TODO: Añadir un try-except para manejar errores al escribir el archivo.
+    def escribir_configuracion(self): # TODO: Añadir un try-except para manejar errores al escribir el archivo.
         """
         Permite al usuario modificar la configuración del robot.
         """
@@ -67,7 +67,7 @@ class ConfigLoader:
 
         print(f">>> Configuración actualizada: [{seccion}] {clave} = {nuevo_valor}")
 
-    def leer_configuracion():
+    def leer_configuracion(self):
         """
         Muestra las configuraciones actuales del archivo config.ini.
         """
