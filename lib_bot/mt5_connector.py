@@ -57,7 +57,7 @@ class MT5Connector:
             raise ConnectionError("No se pudo obtener información de la terminal")
         
     # Obtiene las últimas velas de MetaTrader 5 y las devuelve en formato DataFrame.    
-    def obtener_ultimas_velas(self, simbolo: str, timeframe: int, cantidad: int) -> pd.DataFrame:
+    def obtener_ultimas_velas(self, simbolo, timeframe, cantidad) -> pd.DataFrame:
         """
         Obtiene las últimas 'cantidad' velas de MetaTrader 5 en formato DataFrame.
 
@@ -67,13 +67,34 @@ class MT5Connector:
         :return: DataFrame con las velas en formato OHLC.
         """
         try:
+            # Diccionario para mapear cadenas a valores de MetaTrader5.
+            TIMEFRAMES = {
+                "M1": mt5.TIMEFRAME_M1,
+                "M5": mt5.TIMEFRAME_M5,
+                "M15": mt5.TIMEFRAME_M15,
+                "M30": mt5.TIMEFRAME_M30,
+                "H1": mt5.TIMEFRAME_H1,
+                "H4": mt5.TIMEFRAME_H4,
+                "D1": mt5.TIMEFRAME_D1,
+                "W1": mt5.TIMEFRAME_W1,
+                "MN1": mt5.TIMEFRAME_MN1,
+            }       
+
+             # Convertir el marco temporal de cadena a valor de MetaTrader5.
+            if timeframe not in TIMEFRAMES:
+                raise ValueError(f"Timeframe '{timeframe}' no es válido.")
+            mt5_timeframe = TIMEFRAMES[timeframe]
+
             # Seleccionar el símbolo
             if not mt5.symbol_select(simbolo, True):
                 raise RuntimeError(f"Error al seleccionar el símbolo {simbolo}: {mt5.last_error()}")
+            
+            if not mt5.initialize():
+                raise RuntimeError(f"Error al inicializar MetaTrader 5: {mt5.last_error()}")
 
             # Obtener las últimas 'cantidad' velas
             # Obtener las últimas velas desde la posición 0 (más recientes).
-            rates = mt5.copy_rates_from_pos(simbolo, timeframe, 0, cantidad)
+            rates = mt5.copy_rates_from_pos(simbolo, mt5_timeframe, 0, cantidad) # TODO: origen variables.
 
             # Convertir a DataFrame
             df = pd.DataFrame(rates)
