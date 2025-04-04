@@ -1,5 +1,7 @@
 from lib_bot.mt5_connector import MT5Connector
 from configuracion.config_loader import ConfigLoader
+from lib_bot.robot import Robot
+
 class Menu:
     def __init__(self):
         """
@@ -41,9 +43,6 @@ class Menu:
 ###############################################################################
 
     def submenu_configuracion(self):
-        """
-        Muestra un submenú relacionado con la configuración del robot.
-        """
         submenu_opciones = {
             "1": self.modificar_configuracion,
             "2": self.ver_configuracion,
@@ -76,9 +75,6 @@ class Menu:
 ###############################################################################
 
     def submenu_metatrader5(self):
-        """
-        Muestra un submenú relacionado con las opciones del robot.
-        """
         submenu_opciones = {
             "1": self.info_cuenta,
             "2": self.info_terminal,
@@ -102,22 +98,50 @@ class Menu:
 
     # Muestra información de la cuenta.
     def info_cuenta(self):
-        mt5 = MT5Connector()
-        print(mt5.info_cuenta())
+        #mt5 = MT5Connector()
+        print(MT5Connector.info_cuenta(self))
 
     # Muestra información de la terminal.
     def info_terminal(self):
-        mt5 = MT5Connector()
-        print(mt5.info_terminal())
+        #mt5 = MT5Connector()
+        print(MT5Connector.info_terminal(self))
+
+###############################################################################
+# Submenú jecutar robot                                                       #
+###############################################################################
+
+    def submenu_ejecutar_robot(self): # TODO: Por acabar de implementar.
+        submenu_opciones = {
+            "1": self.mostrando_ultimas_velas,
+            "2": self.info_terminal,
+            "3": self.volver
+        }
+    
+        while True:
+            print("\n### Submenú ROBOT ###")
+            print("[1] - Mostrar últimas velas en terminal.")
+            print("[2] - Información del terminal.")
+            print("[3] - Volver.")
+            opcion = input(">>> Selecciona una opción (1-3): ")
+            accion = submenu_opciones.get(opcion)
+            if accion:
+                accion()
+                # Ajunstar la opción para volver al menú principal.
+                if opcion == "3":  # Salir del submenú
+                    break
+            else:
+                print(">>> Opción no válida.")
+
+    def mostrando_ultimas_velas(self):
+        robot = Robot()
+        robot.imprimir_ultimas_velas_terminal()
+
 
 ###############################################################################
 # Otros                                                                       #
 ###############################################################################
 
     def volver(self):
-        """
-        Vuelve al menú principal.
-        """
         print(">>> Volviendo al menú principal...")
 
     # Finalizar el robot y salir del programa.
@@ -132,11 +156,7 @@ class Menu:
         self.submenu_configuracion()
 
     def ejecutar_robot(self):
-        """
-        Ejecuta el robot.
-        """
-        print(">>> Ejecutando el robot")
-        # Aquí puedes agregar la lógica para ejecutar el robot
+        self.submenu_ejecutar_robot()
     
     
     

@@ -2,6 +2,7 @@ import MetaTrader5 as mt5
 from configuracion.config_loader import ConfigLoader
 import logging
 import pandas as pd
+from datetime import datetime
 
 class MT5Connector:
     def __init__(self, config_path='configuracion/config.ini'):
@@ -17,6 +18,7 @@ class MT5Connector:
         # Iniciar conexión con MetaTrader 5
         if not mt5.initialize(login=self.login, password=self.password, server=self.server):
             logging.error("Error al inicializar MetaTrader 5")
+            raise RuntimeError(f"Error al inicializar MetaTrader 5: {mt5.last_error()}")
             raise ConnectionError("No se pudo conectar a MetaTrader 5")
         else:
             logging.info("MetaTrader 5 inicializado correctamente")
@@ -37,7 +39,7 @@ class MT5Connector:
             print("\n### Información de la cuenta como dataframe:")
             print(df)
         else:
-            logging.error("Error al obtener información de la cuenta.")
+            logging.error("MT5_CONNECTOR - Error al obtener información de la cuenta.")
             raise ConnectionError("No se pudo obtener información de la cuenta")
         
     # Devulve la información de la terminal.
@@ -51,5 +53,36 @@ class MT5Connector:
             print("\n### Información de la terminal como dataframe:")
             print(df)
         else:
-            logging.error("Error al obtener información de la terminal.")
+            logging.error("MT5_CONNECTOR - Error al obtener información de la terminal.")
             raise ConnectionError("No se pudo obtener información de la terminal")
+        
+    # Obtiene las últimas velas de MetaTrader 5 y las devuelve en formato DataFrame.    
+    def obtener_ultimas_velas(self, simbolo: str, timeframe: int, cantidad: int) -> pd.DataFrame:
+        """
+        Obtiene las últimas 'cantidad' velas de MetaTrader 5 en formato DataFrame.
+
+        :param simbolo: El símbolo del mercado (por ejemplo, "EURUSD").
+        :param timeframe: El marco temporal (por ejemplo, mt5.TIMEFRAME_M1 para 1 minuto).
+        :param cantidad: El número de velas a obtener (por defecto 40).
+        :return: DataFrame con las velas en formato OHLC.
+        """
+        try:
+            # Seleccionar el símbolo
+            if not mt5.symbol_select(simbolo, True):
+                raise RuntimeError(f"Error al seleccionar el símbolo {simbolo}: {mt5.last_error()}")
+
+            # Obtener las últimas 'cantidad' velas
+            # Obtener las últimas velas desde la posición 0 (más recientes).
+            rates = mt5.copy_rates_from_pos(simbolo, timeframe, 0, cantidad)
+
+            # Convertir a DataFrame
+            df = pd.DataFrame(rates)
+
+            # Convertir la columna 'time' a formato datetime
+            df['time'] = pd.to_datetime(df['time'], unit='s')
+
+            return df
+    
+        except Exception as e:
+            logging.error(f"MT5_CONNECTOR - Error al obtener las velas: {e}")
+            raise RuntimeError(f"Error al obtener las velas: {e}")
