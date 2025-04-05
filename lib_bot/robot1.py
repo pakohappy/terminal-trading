@@ -33,7 +33,7 @@ class Robot1:
 
             # Obtener las últimas velas
             #mt5C = MT5Connector()
-            df = mt5C.obtener_ultimas_velas(self.simbolo, self.timeframe, self.cantidad)
+            df = mt5C.obtener_ultimas_velas(self, simbolo=self.simbolo, timeframe=self.timeframe, cantidad=self.cantidad)
 
             # Calcular la señal del MACD
             tendencia = Tendencia(df)
@@ -158,22 +158,3 @@ class Robot1:
             print(f"Error al actualizar el stop loss: {resultado.retcode}")
         else:
             print(f"Stop loss actualizado a {nuevo_stop_loss} para la posición {ticket}.")
-
-
-if __name__ == "__main__":
-
-    # Crear una instancia de MT5Connector
-    mt5 = MT5Connector()
-
-    # Crear una instancia del robot con un trailing stop del 1%
-    robot = Robot1()
-
-    # Ejecutar el trailing stop en un bucle
-    try:
-        while True:
-            robot.gestionar_trailing_stop()
-            time.sleep(1)  # Esperar 1 segundo antes de la próxima actualización
-    except KeyboardInterrupt:
-        # Manejar la interrupción del teclado (Ctrl+C)
-        logging.info("Robot detenido por el usuario.")
-        print("Robot detenido por el usuario.")
