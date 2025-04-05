@@ -1,6 +1,6 @@
 from configuracion.config_loader import ConfigLoader
 from indicadores.tendencia import Tendencia
-from lib_bot.mt5_connector import MT5Connector
+from lib_bot.mt5_connector import MT5Connector as mt5C
 import MetaTrader5 as mt5
 import logging
 import time
@@ -32,7 +32,7 @@ class Robot1:
             print("Esperando señal del MACD...")
 
             # Obtener las últimas velas
-            mt5C = MT5Connector()
+            #mt5C = MT5Connector()
             df = mt5C.obtener_ultimas_velas(self.simbolo, self.timeframe, self.cantidad)
 
             # Calcular la señal del MACD
@@ -58,11 +58,27 @@ class Robot1:
         Abre una posición en MetaTrader 5 según el tipo especificado.
         :param tipo: 'compra' para abrir una posición larga, 'venta' para abrir una posición corta.
         """
+        # Verificar si el símbolo está disponible
+        if not mt5.symbol_select(self.simbolo, True):
+            logging.error(f"ROBOT1 - El símbolo {self.simbolo} no está disponible.")	
+
         # Obtener el precio actual del símbolo
         tick = mt5.symbol_info_tick(self.simbolo)
         if tick is None:
-            logging.error(f"Error al obtener el precio actual del símbolo {self.simbolo}.")
-            return
+            logging.error(f"ROBOT1 - Error al obtener el precio del símbolo {self.simbolo}.")
+            print(f"Error: No se pudo obtener el precio del símbolo {self.simbolo}")
+        else:
+            logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}:")
+            print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+        
+        simbolo_info = mt5.symbol_info(self.simbolo)
+        if simbolo_info is None:
+            logging.error(f"ROBOT1 - Error al obtener información del símbolo {self.simbolo}.")
+            logging.error(f"ROBOT - Distancia mínima de Stop Loss/Take Profit: {simbolo_info.trade_stops_level}")
+        else:
+            logging.info(f"ROBOT1 - Información del símbolo {self.simbolo}:")
+            print(f"Tamaño mínimo del lote: {simbolo_info.volume_min}")
+            print(f"Incremento del lote: {simbolo_info.volume_step}")
 
         # Configurar los parámetros de la orden
         precio = tick.ask if tipo == "compra" else tick.bid
