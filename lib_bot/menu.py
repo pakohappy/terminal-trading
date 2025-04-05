@@ -1,6 +1,6 @@
 from lib_bot.mt5_connector import MT5Connector
 from configuracion.config_loader import ConfigLoader
-from lib_bot.robot import Robot
+from lib_bot.robot1 import Robot1
 
 class Menu:
     def __init__(self):
@@ -107,19 +107,19 @@ class Menu:
         print(MT5Connector.info_terminal(self))
 
 ###############################################################################
-# Submenú jecutar robot                                                       #
+# Submenú ejecutar robot                                                       #
 ###############################################################################
 
     def submenu_ejecutar_robot(self): # TODO: Por acabar de implementar.
         submenu_opciones = {
-            "1": self.mostrando_ultimas_velas,
-            "2": self.info_terminal,
+            "1": self.ejecutar_robot1,
+            #"2": self.ejecutar_robot2,
             "3": self.volver
         }
     
         while True:
             print("\n### Submenú ROBOT ###")
-            print("[1] - Mostrar últimas velas en terminal.")
+            print("[1] - Robot 1.")
             print("[2] - Información del terminal.")
             print("[3] - Volver.")
             opcion = input(">>> Selecciona una opción (1-3): ")
@@ -132,9 +132,9 @@ class Menu:
             else:
                 print(">>> Opción no válida.")
 
-    def mostrando_ultimas_velas(self):
-        robot = Robot()
-        robot.imprimir_ultimas_velas_terminal()
+    def ejecutar_robot1(self):
+        robot = Robot1()
+        robot.ejecutar()  # Ejecutar el robot 1
 
 
 ###############################################################################

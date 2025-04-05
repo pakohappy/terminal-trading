@@ -26,13 +26,13 @@ class Tendencia:
         Se añaden las columnas 'macd', 'signal', 'cruce_alcista' y 'cruce_bajista' al DataFrame original.
         """
         # Validar que el DataFrame tenga la columna 'Close'.
-        if 'Close' not in self.df.columns:
+        if 'close' not in self.df.columns:
             logging.error("MACD - El DataFrame no contiene la columna 'Close'.")
             raise ValueError("El DataFrame debe contener una columna 'Close' para calcular el MACD.")
 
         # Cálculo de las medias móviles.
-        df_ema12 = self.df['Close'].ewm(span=self.periodo_rapido, adjust=False).mean()
-        df_ema26 = self.df['Close'].ewm(span=self.periodo_lento, adjust=False).mean()
+        df_ema12 = self.df['close'].ewm(span=self.periodo_rapido, adjust=False).mean()
+        df_ema26 = self.df['close'].ewm(span=self.periodo_lento, adjust=False).mean()
 
         # Cálculo del MACD.
         self.df['macd'] = df_ema12 - df_ema26
@@ -51,10 +51,17 @@ class Tendencia:
         ultimo_cruce_alcista = self.df['cruce_alcista'].iloc[-1]
         ultimo_cruce_bajista = self.df['cruce_bajista'].iloc[-1]
 
+        # Imprimir el DataFrame con las columnas adicionales.
+        print("\n### DataFrame MACD:")
+        print(self.df)
+
         # Imprimir el último cruce alcista y bajista.
         if ultimo_cruce_alcista:
-            return "Cruce alcista detectado. Abrir posición larga."
+            logging.info("TENDENCIA - Se detectó un cruce alcista.")
+            return 1
         elif ultimo_cruce_bajista:
-            return "Cruce bajista detectado. Abrir posición corta."
+            logging.info("TENDENCIA - Se detectó un cruce bajista.")
+            return 0
         else:
+            logging.info("TENDENCIA - No se detectaron cruces alcistas o bajistas.")
             return "No se detectaron cruces."
