@@ -107,3 +107,158 @@ class MT5Connector:
         except Exception as e:
             logging.error(f"MT5_CONNECTOR - Error al obtener las velas: {e}")
             raise RuntimeError(f"Error al obtener las velas: {e}")
+        
+    # Abrir una orden de compra.
+    def abrir_orden_compra(self, simbolo, lotes, precio, sl, tp):
+        """
+        Abre una orden de compra en MetaTrader 5.
+
+        :param simbolo: El símbolo del mercado (por ejemplo, "EURUSD").
+        :param lotes: El número de lotes a comprar.
+        :param precio: El precio al que se desea abrir la orden.
+        :param sl: El nivel de stop loss.
+        :param tp: El nivel de take profit.
+        :return: True si la orden se abre correctamente, False en caso contrario.
+        """
+        try:
+            # Configurar los parámetros de la orden
+            order_type = mt5.ORDER_BUY
+            request = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": simbolo,
+                "volume": lotes,
+                "type": order_type,
+                "price": precio,
+                "sl": sl,
+                "tp": tp,
+                "deviation": 10,
+                "magic": 234000,  # Número mágico para identificar la orden
+                "comment": "Orden de compra desde Python",
+                "type_time": mt5.ORDER_TIME_GTC,  # Tiempo de validez de la orden
+                "type_filling": mt5.ORDER_FILLING_IOC,  # Tipo de ejecución
+            }
+
+            # Enviar la solicitud de apertura de orden
+            result = mt5.order_send(request)
+
+            if result.retcode != mt5.TRADE_RETCODE_DONE:
+                logging.error(f"Error al abrir la orden de compra: {result.retcode}")
+                return False
+
+            logging.info(f"Orden de compra abierta correctamente: {result}")
+            return True
+
+        except Exception as e:
+            logging.error(f"Error al abrir la orden de compra: {e}")
+            return False
+        
+    # Abrir una orden de venta.
+    def abrir_orden_venta(self, simbolo, lotes, precio, sl, tp):
+        """
+        Abre una orden de venta en MetaTrader 5.
+
+        :param simbolo: El símbolo del mercado (por ejemplo, "EURUSD").
+        :param lotes: El número de lotes a vender.
+        :param precio: El precio al que se desea abrir la orden.
+        :param sl: El nivel de stop loss.
+        :param tp: El nivel de take profit.
+        :return: True si la orden se abre correctamente, False en caso contrario.
+        """
+        try:
+            # Configurar los parámetros de la orden
+            order_type = mt5.ORDER_SELL
+            request = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": simbolo,
+                "volume": lotes,
+                "type": order_type,
+                "price": precio,
+                "sl": sl,
+                "tp": tp,
+                "deviation": 10,
+                "magic": 234000,  # Número mágico para identificar la orden
+                "comment": "Orden de venta desde Python",
+                "type_time": mt5.ORDER_TIME_GTC,  # Tiempo de validez de la orden
+                "type_filling": mt5.ORDER_FILLING_IOC,  # Tipo de ejecución
+            }
+
+            # Enviar la solicitud de apertura de orden
+            result = mt5.order_send(request)
+
+            if result.retcode != mt5.TRADE_RETCODE_DONE:
+                logging.error(f"Error al abrir la orden de venta: {result.retcode}")
+                return False
+
+            logging.info(f"Orden de venta abierta correctamente: {result}")
+            return True
+
+        except Exception as e:
+            logging.error(f"Error al abrir la orden de venta: {e}")
+            return False
+        
+    # Cerrar una orden.
+    def cerrar_orden(self, ticket):
+        """
+        Cierra una orden en MetaTrader 5.
+
+        :param ticket: El número de ticket de la orden a cerrar.
+        :return: True si la orden se cierra correctamente, False en caso contrario.
+        """
+        try:
+            # Configurar los parámetros de cierre de la orden
+            request = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "position": ticket,
+                "type": mt5.ORDER_BUY,  # Tipo de orden (compra o venta)
+                "deviation": 10,
+                "magic": 234000,  # Número mágico para identificar la orden
+                "comment": "Cierre de orden desde Python",
+            }
+
+            # Enviar la solicitud de cierre de orden
+            result = mt5.order_send(request)
+
+            if result.retcode != mt5.TRADE_RETCODE_DONE:
+                logging.error(f"Error al cerrar la orden: {result.retcode}")
+                return False
+
+            logging.info(f"Orden cerrada correctamente: {result}")
+            return True
+
+        except Exception as e:
+            logging.error(f"Error al cerrar la orden: {e}")
+            return False
+        
+    # Actualización dinamica stop loss a el % definido en el config.ini.
+    def actualizar_stop_loss(self, ticket, nuevo_sl):
+        """
+        Actualiza el stop loss de una orden en MetaTrader 5.
+
+        :param ticket: El número de ticket de la orden a actualizar.
+        :param nuevo_sl: El nuevo nivel de stop loss.
+        :return: True si el stop loss se actualiza correctamente, False en caso contrario.
+        """
+        try:
+            # Configurar los parámetros de actualización del stop loss
+            request = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "position": ticket,
+                "sl": nuevo_sl,
+                "deviation": 10,
+                "magic": 234000,  # Número mágico para identificar la orden
+                "comment": "Actualización de stop loss desde Python",
+            }
+
+            # Enviar la solicitud de actualización del stop loss
+            result = mt5.order_send(request)
+
+            if result.retcode != mt5.TRADE_RETCODE_DONE:
+                logging.error(f"Error al actualizar el stop loss: {result.retcode}")
+                return False
+
+            logging.info(f"Stop loss actualizado correctamente: {result}")
+            return True
+
+        except Exception as e:
+            logging.error(f"Error al actualizar el stop loss: {e}")
+            return False

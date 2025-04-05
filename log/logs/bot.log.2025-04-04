@@ -1,0 +1,119 @@
+2025-04-04 18:58:20 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 18:58:23 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 18:58:23 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 18:59:27 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 18:59:31 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 18:59:31 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 18:59:31 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 18:59:51 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 18:59:51 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 18:59:51 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 19:00:04 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 19:00:52 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:18:57 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:18:57 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:18:57 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:19:01 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:21:01 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:21:01 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:21:01 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:21:10 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:21:10 - root - ERROR - Error al obtener las �ltimas velas: MT5Connector.obtener_ultimas_velas() takes 3 positional arguments but 4 were given
+2025-04-04 20:23:40 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:23:42 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:23:42 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:23:42 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:23:46 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:23:46 - root - ERROR - Error al obtener las �ltimas velas: MT5Connector.obtener_ultimas_velas() takes 3 positional arguments but 4 were given
+2025-04-04 20:25:19 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:25:21 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:25:21 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:25:21 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:25:24 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:25:24 - root - ERROR - Error al obtener las �ltimas velas: MT5Connector.obtener_ultimas_velas() takes 4 positional arguments but 5 were given
+2025-04-04 20:27:51 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:27:53 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:27:53 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:27:53 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:27:57 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:27:57 - root - ERROR - Error al obtener las �ltimas velas: MT5Connector.obtener_ultimas_velas() takes 3 positional arguments but 4 were given
+2025-04-04 20:28:14 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:28:16 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:28:16 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:28:16 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:28:18 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:28:18 - root - ERROR - Error al obtener las �ltimas velas: MT5Connector.obtener_ultimas_velas() takes 3 positional arguments but 5 were given
+2025-04-04 20:28:50 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:28:52 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:28:52 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:28:52 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:29:00 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:29:00 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:29:00 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:31:45 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:37:40 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:37:40 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:37:40 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:37:44 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:37:44 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:37:44 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:39:25 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:39:28 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:39:28 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:39:28 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:39:31 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:39:31 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:39:31 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:40:51 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:40:53 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:40:53 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:40:53 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:40:55 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:40:55 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:40:55 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:56 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:41:56 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:56 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:58 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:41:58 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:58 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:59 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:41:59 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:41:59 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: <built-in function copy_rates_from_pos> returned a result with an exception set
+2025-04-04 20:43:45 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:43:47 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:43:47 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:43:47 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:43:51 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:46:51 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:46:53 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:46:53 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:46:53 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:46:58 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:47:41 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 20:47:43 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 20:47:43 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:47:43 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 20:47:48 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 20:48:44 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 21:38:23 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 21:38:23 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:38:23 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 21:38:27 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:38:27 - root - ERROR - MT5_CONNECTOR - Error al obtener las velas: module 'MetaTrader5' has no attribute 'self'
+2025-04-04 21:38:27 - root - ERROR - Error al obtener las �ltimas velas: Error al obtener las velas: module 'MetaTrader5' has no attribute 'self'
+2025-04-04 21:39:40 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 21:39:41 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 21:39:41 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:39:41 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 21:39:43 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:40:47 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:40:52 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:41:48 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:41:54 - root - INFO - MetaTrader 5 cerrado correctamente
+2025-04-04 21:41:56 - root - INFO - >>> Sistema de logging configurado.
+2025-04-04 21:41:56 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:41:56 - root - INFO - Conexi�n establecida con MetaTrader 5
+2025-04-04 21:42:03 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:42:15 - root - INFO - MetaTrader 5 inicializado correctamente
+2025-04-04 21:42:27 - root - INFO - MetaTrader 5 cerrado correctamente
