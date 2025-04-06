@@ -1,7 +1,7 @@
 from configuracion.config_loader import ConfigLoader
 from indicadores.tendencia import Tendencia
-from lib_bot.mt5_connector import MT5Connector as mt5C
 import MetaTrader5 as mt5
+import pandas as pd
 import logging
 import time
 import os
@@ -12,10 +12,21 @@ class Robot1:
         Inicializa el robot con la configuración del archivo config.ini.
         """
         self.config = ConfigLoader(config_path)
+        self.login = self.config.get_int('metatrader', 'login')
+        self.password = self.config.get('metatrader', 'password')
+        self.server = self.config.get('metatrader', 'server')
+
         self.simbolo = self.config.get('parametros', 'simbolo')
         self.timeframe = self.config.get('parametros', 'timeframe')
         self.cantidad = self.config.get_int('parametros', 'cantidad')
         self.porcentaje_trailing = self.config.get_float('parametros', 'stop_loss') / 100
+
+        # Iniciar conexión con MetaTrader 5
+        if not mt5.initialize(login=self.login, password=self.password, server=self.server):
+            logging.error(f"Error al inicializar MetaTrader 5: %s", mt5.last_error())
+            quit()
+        else:
+            logging.info("MetaTrader 5 inicializado correctamente")
 
     def ejecutar(self):
         """
@@ -33,7 +44,7 @@ class Robot1:
 
             # Obtener las últimas velas
             #mt5C = MT5Connector()
-            df = mt5C.obtener_ultimas_velas(self, simbolo=self.simbolo, timeframe=self.timeframe, cantidad=self.cantidad)
+            df = self.obtener_ultimas_velas(simbolo=self.simbolo, timeframe=self.timeframe, cantidad=self.cantidad)
 
             # Calcular la señal del MACD
             tendencia = Tendencia(df)
@@ -51,7 +62,7 @@ class Robot1:
             self.gestionar_trailing_stop()
 
             # Esperar un tiempo antes de la próxima iteración
-            time.sleep(0.25)
+            time.sleep(5)
 
     def abrir_posicion(self, tipo):
         """
@@ -68,7 +79,7 @@ class Robot1:
             logging.error(f"ROBOT1 - Error al obtener el precio del símbolo {self.simbolo}.")
             print(f"Error: No se pudo obtener el precio del símbolo {self.simbolo}")
         else:
-            logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}:")
+            logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}: Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
             print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
         
         simbolo_info = mt5.symbol_info(self.simbolo)
@@ -76,7 +87,7 @@ class Robot1:
             logging.error(f"ROBOT1 - Error al obtener información del símbolo {self.simbolo}.")
             logging.error(f"ROBOT - Distancia mínima de Stop Loss/Take Profit: {simbolo_info.trade_stops_level}")
         else:
-            logging.info(f"ROBOT1 - Información del símbolo {self.simbolo}:")
+            logging.info(f"ROBOT1 - Información del símbolo {self.simbolo}:Tamaño mínimo del lote: {simbolo_info.volume_min}, Incremento del lote: {simbolo_info.volume_step}")
             print(f"Tamaño mínimo del lote: {simbolo_info.volume_min}")
             print(f"Incremento del lote: {simbolo_info.volume_step}")
 
@@ -102,7 +113,7 @@ class Robot1:
         if resultado.retcode != mt5.TRADE_RETCODE_DONE:
             logging.error(f"Error al abrir la posición: {resultado.retcode}")
         else:
-            print(f"Posición {tipo} abierta con éxito. Ticket: {resultado.order}")
+            logging.info(f"Posición {tipo} abierta con éxito. Ticket: {resultado.order}")
 
     def gestionar_trailing_stop(self):
         """
@@ -111,6 +122,7 @@ class Robot1:
         # Obtener información de la posición abierta
         posiciones = mt5.positions_get(symbol=self.simbolo)
         if posiciones is None or len(posiciones) == 0:
+            logging.info(f"No hay posiciones abiertas para el símbolo {self.simbolo}.")
             print(f"No hay posiciones abiertas para el símbolo {self.simbolo}.")
             return
 
@@ -123,6 +135,8 @@ class Robot1:
         # Obtener el precio actual del símbolo
         tick = mt5.symbol_info_tick(self.simbolo)
         if tick is None:
+            logging.error(f"Error al obtener el precio actual del símbolo {self.simbolo}.")
+            logging.error(f"ROBOT1 - Error al obtener el precio actual del símbolo {self.simbolo}.")
             print(f"Error al obtener el precio actual del símbolo {self.simbolo}.")
             return
 
@@ -155,6 +169,63 @@ class Robot1:
 
         resultado = mt5.order_send(solicitud)
         if resultado.retcode != mt5.TRADE_RETCODE_DONE:
-            print(f"Error al actualizar el stop loss: {resultado.retcode}")
+            logging.error(f"Error al actualizar el stop loss: {resultado.retcode}")
+            # Si el error es de tipo TRADE_RETCODE_INVALID_SL, significa que el stop loss no es válido.
         else:
-            print(f"Stop loss actualizado a {nuevo_stop_loss} para la posición {ticket}.")
+            logging.info(f"Stop loss actualizado a {nuevo_stop_loss} para la posición {ticket}.")
+            # Si la actualización del stop loss fue exitosa, se imprime el nuevo nivel de stop loss.
+
+    # Obtiene las últimas velas de MetaTrader 5 y las devuelve en formato DataFrame.    
+    def obtener_ultimas_velas(self, simbolo, timeframe, cantidad) -> pd.DataFrame:
+        """
+        Obtiene las últimas 'cantidad' velas de MetaTrader 5 en formato DataFrame.
+
+        :param simbolo: El símbolo del mercado (por ejemplo, "EURUSD").
+        :param timeframe: El marco temporal (por ejemplo, mt5.TIMEFRAME_M1 para 1 minuto).
+        :param cantidad: El número de velas a obtener (por defecto 40).
+        :return: DataFrame con las velas en formato OHLC.
+        """
+        try:
+            # Diccionario para mapear cadenas a valores de MetaTrader5.
+            TIMEFRAMES = {
+                "M1": mt5.TIMEFRAME_M1,
+                "M5": mt5.TIMEFRAME_M5,
+                "M15": mt5.TIMEFRAME_M15,
+                "M30": mt5.TIMEFRAME_M30,
+                "H1": mt5.TIMEFRAME_H1,
+                "H4": mt5.TIMEFRAME_H4,
+                "D1": mt5.TIMEFRAME_D1,
+                "W1": mt5.TIMEFRAME_W1,
+                "MN1": mt5.TIMEFRAME_MN1,
+            }       
+
+             # Convertir el marco temporal de cadena a valor de MetaTrader5.
+            if timeframe not in TIMEFRAMES:
+                raise ValueError(f"Timeframe '{timeframe}' no es válido.")
+            mt5_timeframe = TIMEFRAMES[timeframe]
+
+            # Seleccionar el símbolo
+            if not mt5.symbol_select(simbolo, True):
+                raise RuntimeError(f"Error al seleccionar el símbolo {simbolo}: {mt5.last_error()}")
+            
+            if not mt5.initialize():
+                raise RuntimeError(f"Error al inicializar MetaTrader 5: {mt5.last_error()}")
+
+            # Obtener las últimas 'cantidad' velas
+            # Obtener las últimas velas desde la posición 0 (más recientes).
+            rates = mt5.copy_rates_from_pos(simbolo, mt5_timeframe, 0, cantidad)
+
+            # Convertir a DataFrame
+            df = pd.DataFrame(rates)
+
+            # Convertir la columna 'time' a formato datetime
+            df['time'] = pd.to_datetime(df['time'], unit='s')
+
+            # print("\n### Últimas velas como dataframe:")
+            # print(df)
+
+            return df
+    
+        except Exception as e:
+            logging.error(f"MT5_CONNECTOR - Error al obtener las velas: {e}")
+            raise RuntimeError(f"Error al obtener las velas: {e}")
