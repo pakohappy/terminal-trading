@@ -71,36 +71,51 @@ class Robot1:
         """
         # Verificar si el símbolo está disponible
         if not mt5.symbol_select(self.simbolo, True):
-            logging.error(f"ROBOT1 - El símbolo {self.simbolo} no está disponible.")	
+            logging.error(f"ROBOT1 - El símbolo {self.simbolo} no está disponible.")
+            return
 
         # Obtener el precio actual del símbolo
         tick = mt5.symbol_info_tick(self.simbolo)
         if tick is None:
             logging.error(f"ROBOT1 - Error al obtener el precio del símbolo {self.simbolo}.")
             print(f"Error: No se pudo obtener el precio del símbolo {self.simbolo}")
-        else:
-            logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}: Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
-            print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
-        
+            return
+
+        precio_entrada = tick.ask if tipo == "compra" else tick.bid
+        logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}: Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+        print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+
+        # Obtener información del símbolo
         simbolo_info = mt5.symbol_info(self.simbolo)
         if simbolo_info is None:
             logging.error(f"ROBOT1 - Error al obtener información del símbolo {self.simbolo}.")
-            logging.error(f"ROBOT - Distancia mínima de Stop Loss/Take Profit: {simbolo_info.trade_stops_level}")
-        else:
-            logging.info(f"ROBOT1 - Información del símbolo {self.simbolo}:Tamaño mínimo del lote: {simbolo_info.volume_min}, Incremento del lote: {simbolo_info.volume_step}")
-            print(f"Tamaño mínimo del lote: {simbolo_info.volume_min}")
-            print(f"Incremento del lote: {simbolo_info.volume_step}")
+            return
+
+        # Calcular el nivel de stop loss (5% del precio de entrada)
+        porcentaje_stop_loss = 0.05  # 5%
+        if tipo == "compra":
+            stop_loss = precio_entrada * (1 - porcentaje_stop_loss)
+        elif tipo == "venta":
+            stop_loss = precio_entrada * (1 + porcentaje_stop_loss)
+
+        # Validar que el stop loss cumpla con la distancia mínima requerida
+        distancia_minima = simbolo_info.trade_stops_level * simbolo_info.point
+        if tipo == "compra" and (precio_entrada - stop_loss) < distancia_minima:
+            stop_loss = precio_entrada - distancia_minima
+        elif tipo == "venta" and (stop_loss - precio_entrada) < distancia_minima:
+            stop_loss = precio_entrada + distancia_minima
+
+        logging.info(f"ROBOT1 - Stop Loss calculado: {stop_loss}")
 
         # Configurar los parámetros de la orden
-        precio = tick.ask if tipo == "compra" else tick.bid
         solicitud = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": self.simbolo,
             "volume": self.config.get_float('parametros', 'lote'),  # Tamaño del lote
             "type": mt5.ORDER_TYPE_BUY if tipo == "compra" else mt5.ORDER_TYPE_SELL,
-            "price": precio,
-            "sl": 0.0,  # Stop loss (puedes calcularlo dinámicamente)
-            "tp": 0.0,  # Take profit (puedes calcularlo dinámicamente)
+            "price": precio_entrada,
+            "sl": stop_loss,  # Stop loss calculado
+            "tp": 0.0,  # Take profit (puedes calcularlo dinámicamente si es necesario)
             "deviation": 10,  # Desviación máxima en puntos
             "magic": 235711,  # Identificador único para la orden
             "comment": f"Orden {tipo} basada en MACD",
@@ -115,6 +130,111 @@ class Robot1:
         else:
             logging.info(f"Posición {tipo} abierta con éxito. Ticket: {resultado.order}")
 
+    # def abrir_posicion(self, tipo):
+    #     """
+    #     Abre una posición en MetaTrader 5 según el tipo especificado.
+    #     :param tipo: 'compra' para abrir una posición larga, 'venta' para abrir una posición corta.
+    #     """
+    #     # Verificar si el símbolo está disponible.
+    #     # Se utiliza la función symbol_select para verificar si el símbolo está disponible en MetaTrader 5.
+    #     # Si el símbolo no está disponible, se registra un error y se imprime un mensaje de error.
+    #     # Si el símbolo está disponible, se imprime un mensaje de éxito.
+    #     if not mt5.symbol_select(self.simbolo, True):
+    #         logging.error(f"ROBOT1 - El símbolo {self.simbolo} no está disponible.")	
+
+    #     # Obtener el precio actual del símbolo.
+    #     # Se utiliza la función symbol_info_tick para obtener el precio actual del símbolo.
+    #     # Se verifica si el precio se obtuvo correctamente.
+    #     # Si no se obtuvo el precio, se registra un error y se imprime un mensaje de error.
+    #     # Si se obtuvo el precio, se imprime el precio Bid y Ask.
+    #     tick = mt5.symbol_info_tick(self.simbolo)
+    #     if tick is None:
+    #         logging.error(f"ROBOT1 - Error al obtener el precio del símbolo {self.simbolo}.")
+    #         print(f"Error: No se pudo obtener el precio del símbolo {self.simbolo}")
+    #     else:
+    #         logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}: Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+    #         print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+
+    #     precio_entrada = tick.ask if tipo == "compra" else tick.bid
+    #     logging.info(f"ROBOT1 - Precio actual del símbolo {self.simbolo}: Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+    #     print(f"Precio Bid: {tick.bid}, Precio Ask: {tick.ask}")
+        
+    #     # Obtener información del símbolo.
+    #     # Se obtiene información adicional del símbolo, como el tamaño mínimo del lote y el incremento del lote.
+    #     # Esto es útil para validar el tamaño del lote antes de enviar la orden.
+    #     # Se utiliza la función symbol_info para obtener información sobre el símbolo.
+    #     # Se verifica si la información del símbolo se obtuvo correctamente.
+    #     # Si no se obtuvo información, se registra un error y se imprime un mensaje de error.
+    #     # Si se obtuvo información, se imprime el tamaño mínimo del lote y el incremento del lote.
+    #     simbolo_info = mt5.symbol_info(self.simbolo)
+    #     if simbolo_info is None:
+    #         logging.error(f"ROBOT1 - Error al obtener información del símbolo {self.simbolo}.")
+    #         logging.error(f"ROBOT - Distancia mínima de Stop Loss/Take Profit: {simbolo_info.trade_stops_level}")
+    #     else:
+    #         logging.info(f"ROBOT1 - Información del símbolo {self.simbolo}:Tamaño mínimo del lote: {simbolo_info.volume_min}, Incremento del lote: {simbolo_info.volume_step}")
+    #         print(f"Tamaño mínimo del lote: {simbolo_info.volume_min}")
+    #         print(f"Incremento del lote: {simbolo_info.volume_step}")
+
+    #     # Calcular el nivel de stop loss (5% del precio de entrada)
+    #     # Se calcula el nivel de stop loss como un porcentaje del precio de entrada.
+    #     # Se utiliza un porcentaje fijo del 5% para el stop loss.
+    #     # Se verifica si el tipo de orden es "compra" o "venta" y se calcula el stop loss en consecuencia.
+    #     # Se utiliza la función trade_stops_level para obtener la distancia mínima requerida para el stop loss.
+    #     # Se verifica si el stop loss cumple con la distancia mínima requerida.
+    #     # Si no cumple, se ajusta el stop loss a la distancia mínima.
+    #     # Se imprime el stop loss calculado.
+    #     porcentaje_stop_loss = 0.05  # 5%
+    #     if tipo == "compra":
+    #         stop_loss = precio_entrada * (1 - porcentaje_stop_loss)
+    #     elif tipo == "venta":
+    #         stop_loss = precio_entrada * (1 + porcentaje_stop_loss)
+
+    #     # Validar que el stop loss cumpla con la distancia mínima requerida.
+    #     # Se utiliza la función trade_stops_level para obtener la distancia mínima requerida para el stop loss.
+    #     # Se verifica si el stop loss cumple con la distancia mínima requerida.
+    #     # Si no cumple, se ajusta el stop loss a la distancia mínima.
+    #     # Se imprime el stop loss calculado.
+    #     # Se utiliza la función point para obtener el valor del punto del símbolo.
+    #     # Se calcula la distancia mínima en función del tamaño mínimo del lote y el incremento del lote.
+    #     # Se verifica si el tipo de orden es "compra" o "venta" y se ajusta el stop loss en consecuencia.
+    #     # Se imprime el stop loss calculado.
+    #     distancia_minima = simbolo_info.trade_stops_level * simbolo_info.point
+    #     if tipo == "compra" and (precio_entrada - stop_loss) < distancia_minima:
+    #         stop_loss = precio_entrada - distancia_minima
+    #     elif tipo == "venta" and (stop_loss - precio_entrada) < distancia_minima:
+    #         stop_loss = precio_entrada + distancia_minima
+
+    #     logging.info(f"ROBOT1 - Stop Loss calculado: {stop_loss}")
+
+    #     # Configurar los parámetros de la orden
+    #     # Se configura la solicitud de orden con los parámetros necesarios para abrir una posición.
+    #     # Se utiliza la función order_send para enviar la solicitud de orden a MetaTrader 5.
+    #     # Se verifica si la orden se envió correctamente.
+    #     # Si no se envió correctamente, se registra un error y se imprime un mensaje de error.
+    #     # Si se envió correctamente, se imprime un mensaje de éxito.
+    #     precio = tick.ask if tipo == "compra" else tick.bid
+    #     solicitud = {
+    #         "action": mt5.TRADE_ACTION_DEAL,
+    #         "symbol": self.simbolo,
+    #         "volume": self.config.get_float('parametros', 'lote'),  # Tamaño del lote
+    #         "type": mt5.ORDER_TYPE_BUY if tipo == "compra" else mt5.ORDER_TYPE_SELL,
+    #         "price": precio,
+    #         "sl": 0.0,  # Stop loss (puedes calcularlo dinámicamente)
+    #         "tp": 0.0,  # Take profit (puedes calcularlo dinámicamente)
+    #         "deviation": 10,  # Desviación máxima en puntos
+    #         "magic": 235711,  # Identificador único para la orden
+    #         "comment": f"Orden {tipo} basada en MACD",
+    #         "type_time": mt5.ORDER_TIME_GTC,  # Orden válida hasta que se cancele
+    #         "type_filling": mt5.ORDER_FILLING_IOC,  # Tipo de llenado
+    #     }
+
+    #     # Enviar la orden
+    #     resultado = mt5.order_send(solicitud)
+    #     if resultado.retcode != mt5.TRADE_RETCODE_DONE:
+    #         logging.error(f"Error al abrir la posición: {resultado.retcode}")
+    #     else:
+    #         logging.info(f"Posición {tipo} abierta con éxito. Ticket: {resultado.order}")
+
     def gestionar_trailing_stop(self):
         """
         Gestiona el trailing stop basado en porcentaje para la posición abierta.
@@ -125,9 +245,20 @@ class Robot1:
             logging.info(f"No hay posiciones abiertas para el símbolo {self.simbolo}.")
             print(f"No hay posiciones abiertas para el símbolo {self.simbolo}.")
             return
+        
+        if not mt5.symbol_select(self.simbolo, True):
+            logging.error(f"El símbolo {self.simbolo} no está habilitado.")
+            return
+
+        if not mt5.initialize():
+            logging.error("Error al inicializar MetaTrader 5.")
+            return
 
         # Obtener la posición actual
         posicion = posiciones[0]
+        if not hasattr(posicion, 'price_open'):
+            logging.error("La posición no tiene el atributo 'price_open'.")
+            return
         precio_entrada = posicion.price_open
         tipo_posicion = posicion.type  # 0 = Compra, 1 = Venta
         stop_loss_actual = posicion.sl
@@ -135,9 +266,7 @@ class Robot1:
         # Obtener el precio actual del símbolo
         tick = mt5.symbol_info_tick(self.simbolo)
         if tick is None:
-            logging.error(f"Error al obtener el precio actual del símbolo {self.simbolo}.")
             logging.error(f"ROBOT1 - Error al obtener el precio actual del símbolo {self.simbolo}.")
-            print(f"Error al obtener el precio actual del símbolo {self.simbolo}.")
             return
 
         precio_actual = tick.bid if tipo_posicion == 0 else tick.ask

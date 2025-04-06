@@ -2,7 +2,6 @@ import MetaTrader5 as mt5
 from configuracion.config_loader import ConfigLoader
 import logging
 import pandas as pd
-from datetime import datetime
 
 class MT5Connector:
     def __init__(self, config_path='configuracion/config.ini'):
