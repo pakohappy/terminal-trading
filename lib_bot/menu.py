@@ -1,4 +1,4 @@
-from lib_bot.mt5_connector import MT5Connector
+# -*- coding: utf-8 -*-
 from configuracion.config_loader import ConfigLoader
 from lib_bot.robot1 import Robot1
 
@@ -8,9 +8,8 @@ class Menu:
         Inicializa el menú principal y sus submenús.
         """
         self.opciones = {
-            "1": self.meta_trader_5,
-            "2": self.configuracion,
-            "3": self.ejecutar_robot,
+            "1": self.configuracion,
+            "2": self.ejecutar_robot,
             "S": self.salir
         }
         self.ejecutando = True
@@ -20,9 +19,8 @@ class Menu:
         Muestra el menú principal.
         """
         print("\n### Menú Principal ###")
-        print("[1] - Metatrader 5.")
-        print("[2] - Configuración.")
-        print("[3] - Ejecutar Robot.")
+        print("[1] - Configuración.")
+        print("[2] - Ejecutar Robot.")
         print("[S] - Salir.")
 
     def ejecutar(self):
@@ -31,7 +29,7 @@ class Menu:
         """
         while self.ejecutando:
             self.menu_principal()
-            opcion = input(">>> Selecciona una opción (1-4) o (S) para salir): ").strip().upper()
+            opcion = input(">>> Selecciona una opción (1-2) o (S) para salir): ").strip().upper()
             accion = self.opciones.get(opcion)
             if accion:
                 accion()
@@ -69,42 +67,6 @@ class Menu:
     def ver_configuracion(self):
         conf = ConfigLoader()
         conf.leer_configuracion()
-
-###############################################################################
-# Submenú Metatrader 5                                                        #
-###############################################################################
-
-    def submenu_metatrader5(self):
-        submenu_opciones = {
-            "1": self.info_cuenta,
-            "2": self.info_terminal,
-            "3": self.volver
-        }
-    
-        while True:
-            print("\n### Submenú Metatrader 5 ###")
-            print("[1] - Información de la cuenta.")
-            print("[2] - Información del terminal.")
-            print("[3] - Volver.")
-            opcion = input(">>> Selecciona una opción (1-3): ")
-            accion = submenu_opciones.get(opcion)
-            if accion:
-                accion()
-                # Ajunstar la opción para volver al menú principal.
-                if opcion == "3":  # Salir del submenú
-                    break
-            else:
-                print(">>> Opción no válida.")
-
-    # Muestra información de la cuenta.
-    def info_cuenta(self):
-        #mt5 = MT5Connector()
-        print(MT5Connector.info_cuenta(self))
-
-    # Muestra información de la terminal.
-    def info_terminal(self):
-        #mt5 = MT5Connector()
-        print(MT5Connector.info_terminal(self))
 
 ###############################################################################
 # Submenú ejecutar robot                                                       #
@@ -148,9 +110,6 @@ class Menu:
     def salir(self):
         print(">>> Saliendo del programa...")
         self.ejecutando = False
-    
-    def meta_trader_5(self):
-        self.submenu_metatrader5()
 
     def configuracion(self):
         self.submenu_configuracion()
