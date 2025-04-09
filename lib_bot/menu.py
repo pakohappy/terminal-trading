@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from configuracion.config_loader import ConfigLoader
-from lib_bot.robot1 import Robot1
+from lib_bot.robot1 import Robot1, Robot2
 
 class Menu:
     def __init__(self):
@@ -75,14 +75,14 @@ class Menu:
     def submenu_ejecutar_robot(self): # TODO: Por acabar de implementar.
         submenu_opciones = {
             "1": self.ejecutar_robot1,
-            #"2": self.ejecutar_robot2,
+            "2": self.ejecutar_robot2,
             "3": self.volver
         }
     
         while True:
             print("\n### Submenú ROBOT ###")
-            print("[1] - Robot 1.")
-            print("[2] - Información del terminal.")
+            print("[1] - Robot 1 (MACD).")
+            print("[2] - Robot 2.")
             print("[3] - Volver.")
             opcion = input(">>> Selecciona una opción (1-3): ")
             accion = submenu_opciones.get(opcion)
@@ -94,9 +94,15 @@ class Menu:
             else:
                 print(">>> Opción no válida.")
 
+    # Ejecutar el robot 1.
     def ejecutar_robot1(self):
         robot = Robot1()
-        robot.ejecutar()  # Ejecutar el robot 1
+        robot.ejecutar()
+
+    # Ejecutar el robot 1.
+    def ejecutar_robot2(self):
+        robot = Robot2()
+        robot.ejecutar()
 
 
 ###############################################################################
