@@ -3,15 +3,12 @@ import pandas as pd
 from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
+    
     # Puedo optimizar pasando solo la columna close, pero no es necesario.
-    def __init__(self, df: pd.DataFrame, config_path='configuracion/config.ini'):
-
-        # Cargar configuraciones desde el archivo config.ini
-        self.config = ConfigLoader(config_path)
-        self.periodo_rapido = self.config.get_int('macd', 'periodo_lento')
-        self.periodo_lento = self.config.get_int('macd', 'periodo_rapido')
-        self.periodo_senyal = self.config.get_int('macd', 'periodo_senyal')
-
+    def __init__(self, periodo_rapido, periodo_lento, periodo_senyal, df: pd.DataFrame):
+        self.periodo_rapido = periodo_lento
+        self.periodo_lento = periodo_rapido
+        self.periodo_senyal = periodo_senyal
         self.df = df
 
     def macd(self):
