@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from configuracion.config_loader import ConfigLoader
-from lib_bot.robot1 import Robot1, Robot2
+from lib_bot.robot1 import Robot1
 
 class Menu:
     def __init__(self):
@@ -75,7 +75,7 @@ class Menu:
     def submenu_ejecutar_robot(self): # TODO: Por acabar de implementar.
         submenu_opciones = {
             "1": self.ejecutar_robot1,
-            "2": self.ejecutar_robot2,
+            #"2": self.ejecutar_robot2,
             "3": self.volver
         }
     
@@ -100,9 +100,9 @@ class Menu:
         robot.ejecutar()
 
     # Ejecutar el robot 1.
-    def ejecutar_robot2(self):
-        robot = Robot2()
-        robot.ejecutar()
+    # def ejecutar_robot2(self):
+    #     robot = Robot2()
+    #     robot.ejecutar()
 
 
 ###############################################################################

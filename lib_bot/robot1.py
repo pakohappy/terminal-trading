@@ -16,6 +16,12 @@ class Robot1:
         """
         Inicializa el robot con la configuración y parámetros necesarios.
         """
+        # Inicializa la conexión con MetaTrader 5.
+        if not mt5.initialize():
+            print("initialize() failed, error code =",mt5.last_error())
+            quit()
+        logging.info("ROBOT1 - Conectando con MetaTrader 5...")
+
         self.config_path = cofigpath
         self.symbol = 'EURUSD'
         self.timeframe = mt5.TIMEFRAME_M1
@@ -46,19 +52,11 @@ class Robot1:
     
 
     def ejecutar(self):
-        # Inicializa la conexión con MetaTrader 5.
-        mt5.inizialize()
-        logging.info("ROBOT1 - Conectando con MetaTrader 5...")
-        if not mt5.initialize():
-            logging.error("ROBOT1 - Error al inicializar MetaTrader 5.")
-            return
-        logging.info("ROBOT1 - Conectado con Metatrader 5.")
-
         while True:
-            
             try:
                 # Obtener el DataFrame de precios.
-                self.df = self.obterner_df(self.symbol, self.timeframe, self.velas)
+                velas = self.ult_velas
+                self.df = self.obterner_df(self.symbol, self.timeframe, self.ult_velas)
                 logging.info("ROBOT1 - Datos obtenidos desde MetaTrader 5.")
             except Exception as e:
                 logging.error(f"ROBOT1 - Error al obtener datos: {e}")
@@ -75,8 +73,9 @@ class Robot1:
 
             # Comprobar si hay posiciones abiertas o se ha alcanzado el máximo de posiciones.
             self.posiciones_abiertas = mt5.positions_total()
+            logging.info(f"ROBOT1 - Posiciones abiertas: {self.posiciones_abiertas}")
             if self.posiciones_abiertas >= self.max_posiciones:
-                logging.info("ROBOT1 - Máximo de posiciones alcanzado.")
+                logging.info("ROBOT1 - Máximo de posiciones abiertas alcanzado.")
                 continue
 
             if senyal == 'buy':
@@ -90,4 +89,4 @@ class Robot1:
             else:
                 logging.info("ROBOT1 - No hay señal de tendencia.")
 
-            time.sleep(1)  # Espera 1 segundo entre cada iteración.
+            time.sleep(10)  # Espera x segundos entre cada iteración.
