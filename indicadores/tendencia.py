@@ -50,11 +50,11 @@ class Tendencia:
         
         # Imprimir el último cruce alcista y bajista.
         if ultimo_cruce_alcista:
-            logging.info("TENDENCIA - Se detectó un cruce alcista.")
+            logging.info("MACD - Se detectó un cruce alcista.")
             return 'buy'
         elif ultimo_cruce_bajista:
-            logging.info("TENDENCIA - Se detectó un cruce bajista.")
+            logging.info("MACD - Se detectó un cruce bajista.")
             return 'sell'
         else:
-            logging.info("TENDENCIA - No se detectaron cruces alcistas o bajistas.")
+            logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
             return 'flat'
