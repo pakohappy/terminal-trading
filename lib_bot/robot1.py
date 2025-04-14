@@ -22,6 +22,9 @@ class Robot1:
         self.volume = 0.1
         self.deviation = 10
 
+        self.max_posiciones = 1               # Máximo de posiciones abiertas.
+        self.posiciones_abiertas = 0
+
         self.ult_velas = 30                     # Número de velas a obtener.
         self.periodo_rapido = 12
         self.periodo_lento = 26
@@ -45,35 +48,46 @@ class Robot1:
     def ejecutar(self):
         # Inicializa la conexión con MetaTrader 5.
         mt5.inizialize()
-        logging.info("Conectando con MetaTrader 5...")
+        logging.info("ROBOT1 - Conectando con MetaTrader 5...")
         if not mt5.initialize():
-            logging.error("Error al inicializar MetaTrader 5.")
+            logging.error("ROBOT1 - Error al inicializar MetaTrader 5.")
             return
-        logging.info("Conectado con Metatrader 5.")
+        logging.info("ROBOT1 - Conectado con Metatrader 5.")
 
         while True:
             
             try:
                 # Obtener el DataFrame de precios.
                 self.df = self.obterner_df(self.symbol, self.timeframe, self.velas)
-                logging.info("Datos obtenidos desde MetaTrader 5.")
+                logging.info("ROBOT1 - Datos obtenidos desde MetaTrader 5.")
             except Exception as e:
-                logging.error(f"Error al obtener datos: {e}")
+                logging.error(f"ROBOT1 - Error al obtener datos: {e}")
                 continue
 
-            # Creamos objeto tendencia y calculamos la señayl con MACD.
-            tendencia = Tendencia(self.periodo_rapido, self.periodo_lento, self.periodo_senyal, self.df)
-            senyal = tendencia.macd()
+            try:
+                # Creamos objeto tendencia y calculamos la señayl con MACD.
+                tendencia = Tendencia(self.periodo_rapido, self.periodo_lento, self.periodo_senyal, self.df)
+                senyal = tendencia.macd()
+                logging.info(f"Señal obtenida: {senyal}")
+            except Exception as e:
+                logging.error(f"ROBOT1 - Error al obtener la tendencia: {e}")
+                continue
+
+            # Comprobar si hay posiciones abiertas o se ha alcanzado el máximo de posiciones.
+            self.posiciones_abiertas = mt5.positions_total()
+            if self.posiciones_abiertas >= self.max_posiciones:
+                logging.info("ROBOT1 - Máximo de posiciones alcanzado.")
+                continue
 
             if senyal == 'buy':
-                logging.info("Señal de compra detectada.")
+                logging.info("ROBOT1 - Señal de compra detectada.")
                 # Ejecutar lógica de compra.
                 self.orden_compra()
             elif senyal == 'sell':
-                logging.info("Señal de venta detectada.")
+                logging.info("ROBOT1 - Señal de venta detectada.")
                 # Ejecutar lógica de venta.
                 self.orden_venta()
             else:
-                logging.info("No hay señal de tendencia.")
+                logging.info("ROBOT1 - No hay señal de tendencia.")
 
             time.sleep(1)  # Espera 1 segundo entre cada iteración.
