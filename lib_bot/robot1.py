@@ -26,7 +26,7 @@ class Robot1:
         self.symbol = 'EURUSD'
         self.timeframe = mt5.TIMEFRAME_M1
         self.volumen = 0.1
-        self.deviation = 10
+        self.desviation = 10
 
         self.max_posiciones = 1               # Máximo de posiciones abiertas.
         self.posiciones_abiertas = 0
@@ -50,7 +50,7 @@ class Robot1:
 
         return rates_df
 
-    def abrir_orden(self, self.symbol, self.volumen, senyal):
+    def abrir_orden(self, symbol, volumen, senyal):
         tick = mt5.symbol_info_tick(symbol)
 
         order_dict = {'buy': 0, 'sell': 1}
@@ -59,10 +59,10 @@ class Robot1:
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": symbol,
-            "volume": volume,
-            "type": order_dict[order_type],
-            "price": price_dict[order_type],
-            "deviation": DEVIATION,
+            "volume": volumen,
+            "type": order_dict[senyal],
+            "price": price_dict[senyal],
+            "deviation": self.desviation,
             "magic": 100,
             "comment": "python market order",
             "type_time": mt5.ORDER_TIME_GTC,
