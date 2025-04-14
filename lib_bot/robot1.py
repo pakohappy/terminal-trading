@@ -22,13 +22,25 @@ class Robot1:
         self.volume = 0.1
         self.deviation = 10
 
-        self.velas = 30                     # Número de velas a obtener.
+        self.ult_velas = 30                     # Número de velas a obtener.
         self.periodo_rapido = 12
         self.periodo_lento = 26
         self.periodo_senyal = 9
         self.df = None
 
-    def 
+
+    def obterner_df(self, symbol, timeframe, ult_velas) -> pd.DataFrame:
+        # Obtener los precios de las últimas velas.
+        rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, ult_velas)
+        rates_df = pd.DataFrame(rates)
+
+        # Convertir la columna 'time' a formato datetime.
+        rates_df['time'] = pd.to_datetime(rates_df['time'], unit='s')
+        rates_df['time'] = rates_df['time'].dt.tz_localize('UTC').dt.tz_convert('Europe/Madrid')
+        rates_df['time'] = rates_df['time'].dt.strftime('%d-%m-%Y %H:%M:%S')
+
+        return rates_df
+    
 
     def ejecutar(self):
         # Inicializa la conexión con MetaTrader 5.
@@ -40,5 +52,28 @@ class Robot1:
         logging.info("Conectado con Metatrader 5.")
 
         while True:
+            
+            try:
+                # Obtener el DataFrame de precios.
+                self.df = self.obterner_df(self.symbol, self.timeframe, self.velas)
+                logging.info("Datos obtenidos desde MetaTrader 5.")
+            except Exception as e:
+                logging.error(f"Error al obtener datos: {e}")
+                continue
+
+            # Creamos objeto tendencia y calculamos la señayl con MACD.
+            tendencia = Tendencia(self.periodo_rapido, self.periodo_lento, self.periodo_senyal, self.df)
+            senyal = tendencia.macd()
+
+            if senyal == 'buy':
+                logging.info("Señal de compra detectada.")
+                # Ejecutar lógica de compra.
+                self.orden_compra()
+            elif senyal == 'sell':
+                logging.info("Señal de venta detectada.")
+                # Ejecutar lógica de venta.
+                self.orden_venta()
+            else:
+                logging.info("No hay señal de tendencia.")
 
             time.sleep(1)  # Espera 1 segundo entre cada iteración.
