@@ -2,6 +2,7 @@ from lib_bot.mt5_connector import MT5Connector
 from log.log_loader import setup_logging  # Importar la configuración de logging
 import logging
 from lib_bot.menu import Menu
+from colorama import Fore, Style
 
 
 # Configurar logging desde log_loader
