@@ -50,8 +50,29 @@ class Robot1:
 
         return rates_df
 
-    def abrir_orden(self, self.symbol, self.volumen, senyal)
-    
+    def abrir_orden(self, self.symbol, self.volumen, senyal):
+        tick = mt5.symbol_info_tick(symbol)
+
+        order_dict = {'buy': 0, 'sell': 1}
+        price_dict = {'buy': tick.ask, 'sell': tick.bid}
+
+        request = {
+            "action": mt5.TRADE_ACTION_DEAL,
+            "symbol": symbol,
+            "volume": volume,
+            "type": order_dict[order_type],
+            "price": price_dict[order_type],
+            "deviation": DEVIATION,
+            "magic": 100,
+            "comment": "python market order",
+            "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+        }
+
+        order_result = mt5.order_send(request)
+        print(order_result)
+
+        return order_result
 
     def ejecutar(self):
         while True:
