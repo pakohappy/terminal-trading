@@ -51,7 +51,7 @@ class Robot1:
         self.symbol = 'EURUSD'
         self.timeframe = mt5.TIMEFRAME_M1
         self.volumen = 0.1
-        self.desviation = 15
+        self.desviation = 20
 
         self.max_posiciones = 1               # Máximo de posiciones abiertas.
         self.posiciones_abiertas = 0
