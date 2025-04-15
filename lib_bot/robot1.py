@@ -94,6 +94,8 @@ class Robot1:
         Bucle principal del Robot 1.
         """
         while True:
+            senyal = 'flat'
+
             try:
                 # Comprobar si hay posiciones abiertas o se ha alcanzado el máximo de posiciones.
                 self.posiciones_abiertas = mt5.positions_total()
@@ -112,7 +114,7 @@ class Robot1:
                     logging.error(f"ROBOT1 - Error al obtener datos: {e}")
 
                 try:
-                    # Creamos objeto tendencia y calculamos la señayl con MACD.
+                    # Creamos objeto tendencia y calculamos la senyal con MACD.
                     tendencia = Tendencia(self.periodo_rapido, self.periodo_lento, self.periodo_senyal, self.df)
                     senyal = tendencia.macd()
                     logging.info(f"ROBOT1 - Señal obtenida: {senyal}")
@@ -122,10 +124,18 @@ class Robot1:
                 if senyal == 'buy':
                     logging.info("ROBOT1 - Señal de compra detectada.")
                     # Ejecutar lógica de compra.
-                    self.orden_compra()
+                    self.abrir_orden(
+                        symbol=self.symbol,
+                        volumen=self.volumen,
+                        senyal=senyal
+                    )
                 elif senyal == 'sell':
                     logging.info("ROBOT1 - Señal de venta detectada.")
                     # Ejecutar lógica de venta.
-                    self.orden_venta()
+                    self.abrir_orden(
+                        symbol=self.symbol,
+                        volumen=self.volumen,
+                        senyal=senyal
+                    )
 
             time.sleep(5)  # Espera x segundos entre cada iteración.
