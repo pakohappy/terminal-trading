@@ -34,5 +34,5 @@ if __name__ == "__main__":
     parser.add_argument("mensaje", type=str, help="Mensaje del commit")
     args = parser.parse_args()
 
-    # Pasar el mensaje al método git_push
+    # Pasar el mensaje al método git_push.
     git_push(args.mensaje)

@@ -51,14 +51,14 @@ class Robot1:
         self.symbol = 'EURUSD'
         self.timeframe = mt5.TIMEFRAME_M1
         self.volumen = 0.1
-        self.desviation = 10
+        self.desviation = 15
 
         self.max_posiciones = 1               # Máximo de posiciones abiertas.
         self.posiciones_abiertas = 0
 
         self.ult_velas = 30                     # Número de velas a obtener.
-        self.periodo_rapido = 12
-        self.periodo_lento = 26
+        self.periodo_rapido = 6
+        self.periodo_lento = 14
         self.periodo_senyal = 9
         self.df = None
 
@@ -71,14 +71,18 @@ class Robot1:
         order_dict = {'buy': 0, 'sell': 1}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
+        point = mt5.symbol_info(symbol).point
+
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": symbol,
             "volume": volumen,
             "type": order_dict[senyal],
             "price": price_dict[senyal],
+            "sl": price_dict[senyal] - 15 * point,
+            "tp": price_dict[senyal] + 15 * point,
             "deviation": self.desviation,
-            "magic": 100,
+            "magic": 235711,
             "comment": "python market order",
             "type_time": mt5.ORDER_TIME_GTC,
             "type_filling": mt5.ORDER_FILLING_IOC,
@@ -94,7 +98,7 @@ class Robot1:
         Bucle principal del Robot 1.
         """
         while True:
-            senyal = 'flat'
+            senyal = None
 
             try:
                 # Comprobar si hay posiciones abiertas o se ha alcanzado el máximo de posiciones.
@@ -108,14 +112,23 @@ class Robot1:
             else:
                 try:
                     # Obtener el DataFrame de precios.
-                    self.df = obterner_df(self.symbol, self.timeframe, self.ult_velas)
+                    self.df = obterner_df(
+                        self.symbol,
+                        self.timeframe,
+                        self.ult_velas
+                    )
                     logging.info("ROBOT1 - Datos obtenidos desde MetaTrader 5.")
                 except Exception as e:
                     logging.error(f"ROBOT1 - Error al obtener datos: {e}")
 
                 try:
                     # Creamos objeto tendencia y calculamos la senyal con MACD.
-                    tendencia = Tendencia(self.periodo_rapido, self.periodo_lento, self.periodo_senyal, self.df)
+                    tendencia = Tendencia(
+                        self.periodo_rapido,
+                        self.periodo_lento,
+                        self.periodo_senyal,
+                        self.df
+                    )
                     senyal = tendencia.macd()
                     logging.info(f"ROBOT1 - Señal obtenida: {senyal}")
                 except Exception as e:
