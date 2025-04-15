@@ -3,18 +3,15 @@ import pandas as pd
 from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
+    
     # Puedo optimizar pasando solo la columna close, pero no es necesario.
-    def __init__(self, df: pd.DataFrame, config_path='configuracion/config.ini'):
-
-        # Cargar configuraciones desde el archivo config.ini
-        self.config = ConfigLoader(config_path)
-        self.periodo_rapido = self.config.get_int('macd', 'periodo_lento')
-        self.periodo_lento = self.config.get_int('macd', 'periodo_rapido')
-        self.senyal = self.config.get_int('macd', 'senyal')
-
+    def __init__(self, periodo_rapido, periodo_lento, periodo_senyal, df: pd.DataFrame):
+        self.periodo_rapido = periodo_lento
+        self.periodo_lento = periodo_rapido
+        self.periodo_senyal = periodo_senyal
         self.df = df
 
-    def macd(self) -> pd.DataFrame:
+    def macd(self):
         """
         Calcula la tendencia utilizando el MACD (Moving Average Convergence Divergence).
         El MACD es un indicador de tendencia que muestra la relación entre dos medias móviles de un activo.
@@ -25,7 +22,7 @@ class Tendencia:
         Finalmente, se detectan los cruces alcistas y bajistas del MACD con respecto a la señal.
         Se añaden las columnas 'macd', 'signal', 'cruce_alcista' y 'cruce_bajista' al DataFrame original.
         """
-        # Validar que el DataFrame tenga la columna 'Close'.
+        # Validar que el DataFrame tenga la columna 'close'.
         if 'close' not in self.df.columns:
             logging.error("MACD - El DataFrame no contiene la columna 'Close'.")
             raise ValueError("El DataFrame debe contener una columna 'Close' para calcular el MACD.")
@@ -38,7 +35,7 @@ class Tendencia:
         self.df['macd'] = df_ema12 - df_ema26
 
         # Cálculo de la señal (EMA de 9 periodos del MACD)
-        self.df['signal'] = self.df['macd'].ewm(span=self.senyal, adjust=False).mean()
+        self.df['signal'] = self.df['macd'].ewm(span=self.periodo_senyal, adjust=False).mean()
 
         # Detectar cruces alcistas. (posición larga)
         # La señal se considera alcista cuando el MACD cruza por encima de la señal.
@@ -50,18 +47,14 @@ class Tendencia:
 
         ultimo_cruce_alcista = self.df['cruce_alcista'].iloc[-1]
         ultimo_cruce_bajista = self.df['cruce_bajista'].iloc[-1]
-
-        # Imprimir el DataFrame con las columnas adicionales.
-        print("\n### DataFrame MACD:")
-        print(self.df)
-
+        
         # Imprimir el último cruce alcista y bajista.
         if ultimo_cruce_alcista:
-            logging.info("TENDENCIA - Se detectó un cruce alcista.")
-            return 1
+            logging.info("MACD - Se detectó un cruce alcista.")
+            return 'buy'
         elif ultimo_cruce_bajista:
-            logging.info("TENDENCIA - Se detectó un cruce bajista.")
-            return 0
+            logging.info("MACD - Se detectó un cruce bajista.")
+            return 'sell'
         else:
-            logging.info("TENDENCIA - No se detectaron cruces alcistas o bajistas.")
-            return "No se detectaron cruces."
+            logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
+            return 'flat'
