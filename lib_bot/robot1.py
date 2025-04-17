@@ -51,15 +51,17 @@ class Robot1:
         self.symbol = 'EURUSD'
         self.timeframe = mt5.TIMEFRAME_M1
         self.volumen = 0.1
-        self.desviation = 20
+        self.desviation = 100
+        self.sl = 15
+        self.tp = 15
 
         self.max_posiciones = 1               # Máximo de posiciones abiertas.
         self.posiciones_abiertas = 0
 
         self.ult_velas = 30                     # Número de velas a obtener.
         self.periodo_rapido = 6
-        self.periodo_lento = 14
-        self.periodo_senyal = 9
+        self.periodo_lento = 18
+        self.periodo_senyal = 5
         self.df = None
 
     def abrir_orden(self, symbol: str, volumen: float, senyal: str):
@@ -79,8 +81,8 @@ class Robot1:
             "volume": volumen,
             "type": order_dict[senyal],
             "price": price_dict[senyal],
-            "sl": price_dict[senyal] - 15 * point,
-            "tp": price_dict[senyal] + 15 * point,
+            "sl": price_dict[senyal] - self.sl * point,
+            "tp": price_dict[senyal] + self.tp * point,
             "deviation": self.desviation,
             "magic": 235711,
             "comment": "python market order",
