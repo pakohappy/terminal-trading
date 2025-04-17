@@ -81,7 +81,7 @@ class Robot1:
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
         # Obtener el punto del símbolo.
-        point = mt5.symbol_info.point
+        point = symbol_info.point
 
         # Usar valores seguros
         sl_distancia = max(self.sl, stop_level)  # Usar el mayor entre stop_loss esperado y mínimo
