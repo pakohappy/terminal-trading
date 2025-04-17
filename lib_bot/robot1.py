@@ -77,7 +77,7 @@ class Robot1:
         # Obtener la distancia mínima del stop loss en puntos.
         stop_level = symbol_info.trade_stops_level
 
-        order_dict = {'buy': ORDER_TYPE_BUY, 'sell': ORDER_TYPE_SELL}
+        order_dict = {'buy': mt5.ORDER_TYPE_BUY, 'sell': mt5.ORDER_TYPE_SELL}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
         # Obtener el punto del símbolo.
