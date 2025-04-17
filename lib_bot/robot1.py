@@ -7,6 +7,8 @@
 import MetaTrader5 as mt5
 import pandas as pd
 import time
+
+from MetaTrader5 import ORDER_TYPE_BUY
 from indicadores.tendencia import Tendencia
 import logging
 
@@ -70,10 +72,11 @@ class Robot1:
         """
         tick = mt5.symbol_info_tick(symbol)
 
-        order_dict = {'buy': 0, 'sell': 1}
+        order_dict = {'buy': ORDER_TYPE_BUY, 'sell': ORDER_TYPE_SELL}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
         point = mt5.symbol_info(symbol).point
+        print(f"ROBOT1 - Punto: {point}")
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -91,7 +94,15 @@ class Robot1:
         }
 
         order_result = mt5.order_send(request)
-        print(order_result)
+
+        # Registrar detalles del resultado.
+        logging.info("== RESULTADO DE LA ORDEN ==")
+        logging.info(f"Resultado: {order_result.retcode}")
+        logging.info(f"Precio solicitado: {order_result.price}")
+        logging.info(f"Volumen: {order_result.volume}")
+        logging.info(f"ID de la Orden: {order_result.order}")
+        logging.info(f"Comentario: {order_result.comment}")
+        logging.info("=====================================")
 
         return order_result
 
