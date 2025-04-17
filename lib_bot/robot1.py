@@ -70,13 +70,22 @@ class Robot1:
         """
         Función para abrir una orden.
         """
+        # Obtener la información del último tick del símbolo.
         tick = mt5.symbol_info_tick(symbol)
+        # Obtener la información total del símbolo.
+        symbol_info = mt5.symbol_info(symbol)
+        # Obtener la distancia mínima del stop loss en puntos.
+        stop_level = symbol_info.trade_stops_level
 
         order_dict = {'buy': ORDER_TYPE_BUY, 'sell': ORDER_TYPE_SELL}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
-        point = mt5.symbol_info(symbol).point
-        print(f"ROBOT1 - Punto: {point}")
+        # Obtener el punto del símbolo.
+        point = mt5.symbol_info.point
+
+        # Usar valores seguros
+        sl_distancia = max(self.sl, stop_level)  # Usar el mayor entre stop_loss esperado y mínimo
+        tp_distancia = max(self.tp, stop_level)
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -84,8 +93,8 @@ class Robot1:
             "volume": volumen,
             "type": order_dict[senyal],
             "price": price_dict[senyal],
-            "sl": price_dict[senyal] - self.sl * point,
-            "tp": price_dict[senyal] + self.tp * point,
+            "sl": price_dict[senyal] - sl_distancia * point,
+            "tp": price_dict[senyal] + tp_distancia * point,
             "deviation": self.desviation,
             "magic": 235711,
             "comment": "python market order",
@@ -94,15 +103,7 @@ class Robot1:
         }
 
         order_result = mt5.order_send(request)
-
-        # Registrar detalles del resultado.
-        logging.info("== RESULTADO DE LA ORDEN ==")
-        logging.info(f"Resultado: {order_result.retcode}")
-        logging.info(f"Precio solicitado: {order_result.price}")
-        logging.info(f"Volumen: {order_result.volume}")
-        logging.info(f"ID de la Orden: {order_result.order}")
-        logging.info(f"Comentario: {order_result.comment}")
-        logging.info("=====================================")
+        print(order_result)
 
         return order_result
 
