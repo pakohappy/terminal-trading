@@ -63,7 +63,7 @@ class Robot1:
         self.ult_velas = 30                     # Número de velas a obtener.
         self.periodo_rapido = 6
         self.periodo_lento = 18
-        self.periodo_senyal = 5  # TODO: Eliminar señal para que trabaje con línea 0.
+        self.periodo_senyal = 5  # TODO : Eliminar señal para que trabaje con línea 0.
         self.df = None
 
     def abrir_orden(self, symbol: str, volumen: float, senyal: str):
