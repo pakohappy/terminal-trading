@@ -7,8 +7,6 @@
 import MetaTrader5 as mt5
 import pandas as pd
 import time
-
-from MetaTrader5 import ORDER_TYPE_BUY
 from indicadores.tendencia import Tendencia
 import logging
 
