@@ -61,7 +61,7 @@ class Robot1:
         self.ult_velas = 30                     # Número de velas a obtener.
         self.periodo_rapido = 6
         self.periodo_lento = 18
-        self.periodo_senyal = 5  # TODO : Eliminar señal para que trabaje con línea 0.
+        self.periodo_senyal = 5  #todo cambiar a línea 0 y omitir línea señal.
         self.df = None
 
     def abrir_orden(self, symbol: str, volumen: float, senyal: str):
@@ -72,8 +72,6 @@ class Robot1:
         tick = mt5.symbol_info_tick(symbol)
         # Obtener la información total del símbolo.
         symbol_info = mt5.symbol_info(symbol)
-        # Obtener la distancia mínima del stop loss en puntos.
-        stop_level = symbol_info.trade_stops_level
 
         order_dict = {'buy': mt5.ORDER_TYPE_BUY, 'sell': mt5.ORDER_TYPE_SELL}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
@@ -81,9 +79,17 @@ class Robot1:
         # Obtener el punto del símbolo.
         point = symbol_info.point
 
-        # Usar valores seguros
-        sl_distancia = max(self.sl, stop_level)  # Usar el mayor entre stop_loss esperado y mínimo
-        tp_distancia = max(self.tp, stop_level)
+        # Detectar dirección del stopLoss y takeProfit.
+        stop_loss = 0
+        take_profit = 0
+
+        if order_dict[senyal] == mt5.ORDER_TYPE_BUY:
+            stop_loss = price_dict[senyal] - self.sl * point
+            take_profit = price_dict[senyal] + self.tp * point
+
+        if order_dict[senyal] == mt5.ORDER_TYPE_SELL:
+            stop_loss = price_dict[senyal] + self.sl * point
+            take_profit = price_dict[senyal] - self.tp * point
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -91,8 +97,8 @@ class Robot1:
             "volume": volumen,
             "type": order_dict[senyal],
             "price": price_dict[senyal],
-            "sl": price_dict[senyal] - sl_distancia * point,
-            "tp": price_dict[senyal] + tp_distancia * point,
+            "sl": stop_loss,
+            "tp": take_profit,
             "deviation": self.desviation,
             "magic": 235711,
             "comment": "python market order",
@@ -163,4 +169,4 @@ class Robot1:
                         senyal=senyal
                     )
 
-            time.sleep(5)  # Espera x segundos entre cada iteración.
+            time.sleep(1)  # Espera x segundos entre cada iteración.
