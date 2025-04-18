@@ -52,8 +52,8 @@ class Robot1:
         self.timeframe = mt5.TIMEFRAME_M1
         self.volumen = 0.1
         self.desviation = 100
-        self.sl = 15
-        self.tp = 15
+        self.sl = 25
+        self.tp = 25
 
         self.max_posiciones = 1               # Máximo de posiciones abiertas.
         self.posiciones_abiertas = 0
@@ -84,12 +84,12 @@ class Robot1:
         take_profit = 0
 
         if order_dict[senyal] == mt5.ORDER_TYPE_BUY:
-            stop_loss = price_dict[senyal] - self.sl * point
-            take_profit = price_dict[senyal] + self.tp * point
+            stop_loss = price_dict[senyal] - self.sl
+            take_profit = price_dict[senyal] + self.tp
 
         if order_dict[senyal] == mt5.ORDER_TYPE_SELL:
-            stop_loss = price_dict[senyal] + self.sl * point
-            take_profit = price_dict[senyal] - self.tp * point
+            stop_loss = price_dict[senyal] + self.sl
+            take_profit = price_dict[senyal] - self.tp
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
