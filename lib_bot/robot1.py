@@ -84,12 +84,12 @@ class Robot1:
         take_profit = 0
 
         if order_dict[senyal] == mt5.ORDER_TYPE_BUY:
-            stop_loss = price_dict[senyal] - self.sl
-            take_profit = price_dict[senyal] + self.tp
+            stop_loss = price_dict[senyal] - self.sl * point
+            take_profit = price_dict[senyal] + self.tp * point
 
         if order_dict[senyal] == mt5.ORDER_TYPE_SELL:
-            stop_loss = price_dict[senyal] + self.sl
-            take_profit = price_dict[senyal] - self.tp
+            stop_loss = price_dict[senyal] + self.sl * point
+            take_profit = price_dict[senyal] - self.tp * point
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
