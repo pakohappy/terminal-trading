@@ -1,7 +1,7 @@
 import MetaTrader5 as mt5
 import pandas as pd
 
-def sl_dynamic():
+def sl_dynamic(stop_loss, min_pip_win):
     positions = mt5.positions_get()
 
     # Si no hay posiciones abiertas se anula el resto de la lógica.
@@ -9,21 +9,18 @@ def sl_dynamic():
         return None
 
     # Convertir la tupla de posiciones en un DataFrame.
-    '''
-    El DataFrame resultante incluirá todas las columnas disponibles en las posiciones, como:
-    - `ticket` (número de ticket de la posición)
-    - `time` (tiempo de apertura)
-    - `type` (tipo de orden: compra/venta)
-    - `volume` (volumen de la operación)
-    - `symbol` (símbolo del instrumento)
-    - `price_open` (precio de apertura)
-    - `sl` (stop loss)
-    - `tp` (take profit)
-    - Y otros datos relevantes
-    '''
     df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
 
     # Obtener una lista con los tickets abiertos.
     lista_tickets = df['ticket'].to_list()
 
-    return None
+    new_stop_loss =
+
+    for ticket in lista_tickets:
+        # Obtenemos el type de la posición.
+        # 0 - BUY, 1 - SELL.
+        ticket_type = mt5.symbol_info(ticket).type
+
+        if price_current > price_open + stop_loss
+
+    return lista_tickets

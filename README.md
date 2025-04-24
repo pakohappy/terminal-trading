@@ -1,3 +1,9 @@
+# "Type" en un DataFrame.
+
+0 ---> Posición larga (BUY).
+1 ---> Posición cortq (SELL).
+
+
 # Parámetro timeframe Metatrader5 (opciones).
 TIMEFRAME is an enumeration with possible chart period values
 
@@ -24,4 +30,5 @@ TIMEFRAME is an enumeration with possible chart period values
 | TIMEFRAME_D1  |       1 día           |
 | TIMEFRAME_W1  |       1 semana        |
 | TIMEFRAME_MN1 |       1 mes           |
+|---------------|-----------------------|
 
