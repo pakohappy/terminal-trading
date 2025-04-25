@@ -3,7 +3,7 @@ import pandas as pd
 import logging
 import time
 
-def sl_dynamic(pips_sl):
+def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
     positions = mt5.positions_get()
 
     # Si no hay posiciones abiertas se anula el resto de la lógica.
@@ -11,8 +11,7 @@ def sl_dynamic(pips_sl):
         return None
 
     # Convertir la tupla de posiciones en un DataFrame.
-    columnas = ['ticket']
-    df = pd.DataFrame(list(positions), columns=columnas)
+    df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
     # Obtener una lista con los tickets abiertos.
     lista_tickets = df['ticket'].to_list()
 
@@ -28,11 +27,11 @@ def sl_dynamic(pips_sl):
         if ticket_type == 0:
             if position_profit > 0:
                 new_sl = price_current - pips_sl
-            print(ticket)
+            #print(ticket)
         elif ticket_type == 1:
             if position_profit > 0:
                 new_sl = price_current + pips_sl
-            print(ticket)
+            #print(ticket)
         else:
             logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
