@@ -22,16 +22,30 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
         ticket_type = posicion.type
         price_current = posicion.price_current
         position_profit = posicion.profit
+        symbol = posicion.symbol
+        current_sl = posicion.sl
         new_sl = 0
+
+        #print(ticket_type, price_current, position_profit, symbol)
+        print(f'El stop loss actual es: {current_sl}')
+
+        # Obtener el symbol de la posición.
+        symbol_info = mt5.symbol_info(symbol)
+        # Obtener el punto del símbolo.
+        point = symbol_info.point
 
         if ticket_type == 0:
             if position_profit > 0:
-                new_sl = price_current - pips_sl
-            #print(ticket)
+                new_sl = price_current - pips_sl * point
+            print(ticket)
+            if current_sl == 0:
+                new_sl = posicion.price_open - pips_sl * point
         elif ticket_type == 1:
             if position_profit > 0:
-                new_sl = price_current + pips_sl
-            #print(ticket)
+                new_sl = price_current + pips_sl * point
+            print(ticket)
+            if current_sl == 0:
+                new_sl = posicion.price_open + pips_sl * point
         else:
             logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
@@ -40,9 +54,13 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
             'position': ticket,
             'sl': new_sl,
         }
+        print(request)
         try:
             result = mt5.order_send(request)
-            print(result)
+            if result is not None:
+                logging.info(f"SL_DYNAMIC - Orden enviada correctamente: {result}")
+            else:
+                logging.error("SL_DYNAMIC - Falló el envío de la orden.")
         except Exception as error:
             logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
 
@@ -54,14 +72,14 @@ if __name__ == "__main__":
 
     # Inicializar conexión con MetaTrader5
     if not mt5.initialize():
-        logging.error("Error al inicializar MetaTrader5")
+        logging.error("SL_DYNAMIC - Error al inicializar MetaTrader5")
         quit()
 
     try:
         # Bucle infinito
         while True:
             try:
-                PIP_SL_PARAM = 0.001
+                PIP_SL_PARAM = 100000
                 sl_dynamic(PIP_SL_PARAM)
                 # Opcional: añadir una pausa entre iteraciones
                 time.sleep(1)  # Pausa de 60 segundos entre cada ejecución
