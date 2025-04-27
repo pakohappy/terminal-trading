@@ -20,7 +20,7 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
         # 0 - BUY, 1 - SELL.
         posicion = mt5.positions_get(ticket=ticket)[0]
         ticket_type = posicion.type
-        price_current = posicion.price_current
+        price_current = posicion.price_current # todo cambiar todas las variables por posicio.loquesea
         position_profit = posicion.profit
         symbol = posicion.symbol
         current_sl = posicion.sl
@@ -40,12 +40,16 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
             print(ticket)
             if current_sl == 0:
                 new_sl = posicion.price_open - pips_sl * point
+            if new_sl < posicion.sl:
+                new_sl = posicion.sl
         elif ticket_type == 1:
             if position_profit > 0:
                 new_sl = price_current + pips_sl * point
             print(ticket)
             if current_sl == 0:
                 new_sl = posicion.price_open + pips_sl * point
+            if new_sl > posicion.sl:
+                new_sl = posicion.sl
         else:
             logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
