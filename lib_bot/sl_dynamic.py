@@ -35,20 +35,20 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
         point = symbol_info.point
 
         if ticket_type == 0:
-            if position_profit > 0:
-                new_sl = price_current - pips_sl * point
+            #if position_profit > 0:
+            new_sl = price_current - pips_sl * point
             print(ticket)
             if current_sl == 0:
                 new_sl = posicion.price_open - pips_sl * point
             if new_sl < posicion.sl:
                 new_sl = posicion.sl
         elif ticket_type == 1:
-            if position_profit > 0:
-                new_sl = price_current + pips_sl * point
+            #if position_profit > 0:
+            new_sl = price_current + pips_sl * point
             print(ticket)
-            if current_sl == 0:
+            if posicion.sl == 0.0:
                 new_sl = posicion.price_open + pips_sl * point
-            if new_sl > posicion.sl:
+            if new_sl > posicion.sl != 0:
                 new_sl = posicion.sl
         else:
             logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         # Bucle infinito
         while True:
             try:
-                PIP_SL_PARAM = 100000
+                PIP_SL_PARAM = 100
                 sl_dynamic(PIP_SL_PARAM)
                 # Opcional: añadir una pausa entre iteraciones
                 time.sleep(1)  # Pausa de 60 segundos entre cada ejecución
