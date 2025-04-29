@@ -19,33 +19,24 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
         # Obtenemos información de la posición.
         # 0 - BUY, 1 - SELL.
         posicion = mt5.positions_get(ticket=ticket)[0]
-        ticket_type = posicion.type
-        price_current = posicion.price_current # todo cambiar todas las variables por posicio.loquesea
-        position_profit = posicion.profit
-        symbol = posicion.symbol
-        current_sl = posicion.sl
         new_sl = 0
 
         #print(ticket_type, price_current, position_profit, symbol)
-        print(f'El stop loss actual es: {current_sl}')
+        print(f'El stop loss actual es: {posicion.sl}')
 
         # Obtener el symbol de la posición.
-        symbol_info = mt5.symbol_info(symbol)
+        symbol_info = mt5.symbol_info(posicion.symbol)
         # Obtener el punto del símbolo.
         point = symbol_info.point
 
-        if ticket_type == 0:
-            #if position_profit > 0:
-            new_sl = price_current - pips_sl * point
-            print(ticket)
-            if current_sl == 0:
+        if posicion.type == 0:
+            new_sl = posicion.price_current - pips_sl * point
+            if posicion.sl == 0.0:
                 new_sl = posicion.price_open - pips_sl * point
             if new_sl < posicion.sl:
                 new_sl = posicion.sl
-        elif ticket_type == 1:
-            #if position_profit > 0:
-            new_sl = price_current + pips_sl * point
-            print(ticket)
+        elif posicion.type == 1:
+            new_sl = posicion.price_current + pips_sl * point
             if posicion.sl == 0.0:
                 new_sl = posicion.price_open + pips_sl * point
             if new_sl > posicion.sl != 0:
@@ -59,14 +50,18 @@ def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
             'sl': new_sl,
         }
         print(request)
-        try:
-            result = mt5.order_send(request)
-            if result is not None:
-                logging.info(f"SL_DYNAMIC - Orden enviada correctamente: {result}")
-            else:
-                logging.error("SL_DYNAMIC - Falló el envío de la orden.")
-        except Exception as error:
-            logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
+
+        if new_sl == 0:
+            print(">>> No es necesario actualizar el STOP LOSS.")
+        else:
+            try:
+                result = mt5.order_send(request)
+                if result is not None:
+                    logging.info(f"SL_DYNAMIC - Orden enviada: {posicion.ticket}->{result.comment}")
+                else:
+                    logging.error(f"SL_DYNAMIC - Falló el envío de la orden.")
+            except Exception as error:
+                logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
 
     return None
 
@@ -83,7 +78,7 @@ if __name__ == "__main__":
         # Bucle infinito
         while True:
             try:
-                PIP_SL_PARAM = 100
+                PIP_SL_PARAM = 50
                 sl_dynamic(PIP_SL_PARAM)
                 # Opcional: añadir una pausa entre iteraciones
                 time.sleep(1)  # Pausa de 60 segundos entre cada ejecución
