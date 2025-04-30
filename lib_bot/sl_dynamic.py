@@ -3,7 +3,7 @@ import pandas as pd
 import logging
 import time
 
-def sl_dynamic(pips_sl): #todo falta hacer que el sl no se vuelva atrás.
+def sl_dynamic(pips_sl, pips_min_tp=None): #todo falta hacer que el sl no se vuelva atrás.
     positions = mt5.positions_get()
 
     # Si no hay posiciones abiertas se anula el resto de la lógica.
