@@ -1,7 +1,8 @@
-Metatrader5
-pandas
+Metatrader5~=5.0.4874
+pandas~=2.2.3
 numpy
-matplotlib
+matplotlib~=3.10.1
 scikit-learn
 scipy
-colorama
+colorama~=0.4.6
+yfinance~=0.2.57
