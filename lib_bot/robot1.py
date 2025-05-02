@@ -9,6 +9,8 @@ import pandas as pd
 import time
 from indicadores.tendencia import Tendencia
 import logging
+from lib_bot.sl_dynamic import sl_dynamic
+
 
 def initialize_mt5():
     """
@@ -126,6 +128,7 @@ class Robot1:
                 logging.error(f"ROBOT1 - Error al obtener las posiciones abiertas: {e}")
 
             if self.posiciones_abiertas >= self.max_posiciones:
+                sl_dynamic(self.sl)
                 logging.info("ROBOT1 - Máximo de posiciones abiertas alcanzado.")
             else:
                 try:
