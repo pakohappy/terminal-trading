@@ -3,13 +3,12 @@ import pandas as pd
 from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
-    def __init__(self, periodo_rapido, periodo_lento, periodo_senyal, df: pd.DataFrame):
-        self.periodo_rapido = periodo_rapido
-        self.periodo_lento = periodo_lento
-        self.periodo_senyal = periodo_senyal
+    def __init__(self, df: pd.DataFrame):
         self.df = df
 
-    def macd(self):
+    def macd(self): #todo modificar por completo para que las variables se le pasen a la función
+                    #todo no en la creación del objeto.
+                    #todo La clase solo debe recibir el DataFrame.
         """
         Calcula la tendencia utilizando el MACD (Moving Average Convergence Divergence).
         """
