@@ -9,7 +9,7 @@ import pandas as pd
 import time
 from indicadores.tendencia import Tendencia
 import logging
-from lib_bot.sl_dynamic import sl_dynamic
+from estrategias.sl_dynamic import sl_dynamic
 
 
 def initialize_mt5():
