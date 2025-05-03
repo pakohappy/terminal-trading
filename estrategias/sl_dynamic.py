@@ -3,67 +3,71 @@ import pandas as pd
 import logging
 import time
 
-def sl_dynamic(pips_sl, pips_min_tp=None): #todo falta hacer que el sl no se vuelva atrás.
-    positions = mt5.positions_get()
+class SlDynamic:
+    def __init__(self, pips_sl):
+        self.pips_sl = pips_sl
 
-    # Si no hay posiciones abiertas se anula el resto de la lógica.
-    if positions is None or len(positions) == 0:
+    def sl_follower(self):
+        positions = mt5.positions_get()
+
+        # Si no hay posiciones abiertas se anula el resto de la lógica.
+        if positions is None or len(positions) == 0:
+            return None
+
+        # Convertir la tupla de posiciones en un DataFrame.
+        df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
+        # Obtener una lista con los tickets abiertos.
+        lista_tickets = df['ticket'].to_list()
+
+        for ticket in lista_tickets:
+            # Obtenemos información de la posición.
+            # 0 - BUY, 1 - SELL.
+            posicion = mt5.positions_get(ticket=ticket)[0]
+            new_sl = 0
+
+            #print(ticket_type, price_current, position_profit, symbol)
+            print(f'El stop loss actual es: {posicion.sl}')
+
+            # Obtener el symbol de la posición.
+            symbol_info = mt5.symbol_info(posicion.symbol)
+            # Obtener el punto del símbolo.
+            point = symbol_info.point
+
+            if posicion.type == 0:
+                new_sl = posicion.price_current - self.pips_sl * point
+                if posicion.sl == 0.0:
+                    new_sl = posicion.price_open - self.pips_sl * point
+                if new_sl < posicion.sl:
+                    new_sl = posicion.sl
+            elif posicion.type == 1:
+                new_sl = posicion.price_current + self.pips_sl * point
+                if posicion.sl == 0.0:
+                    new_sl = posicion.price_open + self.pips_sl * point
+                if new_sl > posicion.sl != 0:
+                    new_sl = posicion.sl
+            else:
+                logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
+
+            request = {
+                'action': mt5.TRADE_ACTION_SLTP,
+                'position': ticket,
+                'sl': new_sl,
+            }
+            print(request)
+
+            if new_sl == 0:
+                print(">>> No es necesario actualizar el STOP LOSS.")
+            else:
+                try:
+                    result = mt5.order_send(request)
+                    if result is not None:
+                        logging.info(f"SL_DYNAMIC - Orden enviada: {posicion.ticket}->{result.comment}")
+                    else:
+                        logging.error(f"SL_DYNAMIC - Falló el envío de la orden.")
+                except Exception as error:
+                    logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
+
         return None
-
-    # Convertir la tupla de posiciones en un DataFrame.
-    df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
-    # Obtener una lista con los tickets abiertos.
-    lista_tickets = df['ticket'].to_list()
-
-    for ticket in lista_tickets:
-        # Obtenemos información de la posición.
-        # 0 - BUY, 1 - SELL.
-        posicion = mt5.positions_get(ticket=ticket)[0]
-        new_sl = 0
-
-        #print(ticket_type, price_current, position_profit, symbol)
-        print(f'El stop loss actual es: {posicion.sl}')
-
-        # Obtener el symbol de la posición.
-        symbol_info = mt5.symbol_info(posicion.symbol)
-        # Obtener el punto del símbolo.
-        point = symbol_info.point
-
-        if posicion.type == 0:
-            new_sl = posicion.price_current - pips_sl * point
-            if posicion.sl == 0.0:
-                new_sl = posicion.price_open - pips_sl * point
-            if new_sl < posicion.sl:
-                new_sl = posicion.sl
-        elif posicion.type == 1:
-            new_sl = posicion.price_current + pips_sl * point
-            if posicion.sl == 0.0:
-                new_sl = posicion.price_open + pips_sl * point
-            if new_sl > posicion.sl != 0:
-                new_sl = posicion.sl
-        else:
-            logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
-
-        request = {
-            'action': mt5.TRADE_ACTION_SLTP,
-            'position': ticket,
-            'sl': new_sl,
-        }
-        print(request)
-
-        if new_sl == 0:
-            print(">>> No es necesario actualizar el STOP LOSS.")
-        else:
-            try:
-                result = mt5.order_send(request)
-                if result is not None:
-                    logging.info(f"SL_DYNAMIC - Orden enviada: {posicion.ticket}->{result.comment}")
-                else:
-                    logging.error(f"SL_DYNAMIC - Falló el envío de la orden.")
-            except Exception as error:
-                logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
-
-    return None
 
 if __name__ == "__main__":
     # Configurar el logging
@@ -79,7 +83,8 @@ if __name__ == "__main__":
         while True:
             try:
                 PIP_SL_PARAM = 50
-                sl_dynamic(PIP_SL_PARAM)
+                sldyn = SlDynamic(PIP_SL_PARAM)
+                sldyn.sl_follower()
                 # Opcional: añadir una pausa entre iteraciones
                 time.sleep(1)  # Pausa de 60 segundos entre cada ejecución
             except Exception as e:

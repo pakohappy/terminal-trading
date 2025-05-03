@@ -1,6 +1,7 @@
 """
 -*- coding: utf-8 -*-
 """
+
 # Robot - 1.
 # MACD - Moving Average Convergence Divergence.
 
@@ -9,7 +10,7 @@ import pandas as pd
 import time
 from indicadores.tendencia import Tendencia
 import logging
-from estrategias.sl_dynamic import sl_dynamic
+from estrategias.sl_dynamic import SlDynamic
 
 
 def initialize_mt5():
@@ -40,7 +41,7 @@ class Robot1:
     """
     Clase Robot 1.
     """
-    DEFAULT_CONFIG_PATH = 'configuracion/config.ini'
+    DEFAULT_CONFIG_PATH = '../configuracion/config.ini'
 
     def __init__(self, cofig_path=DEFAULT_CONFIG_PATH):
         """
