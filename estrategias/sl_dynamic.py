@@ -3,23 +3,32 @@ import pandas as pd
 import logging
 import time
 
+from pandas.core.interchange.dataframe_protocol import DataFrame
+
+
+def get_tickets() -> DataFrame:
+    # Obtener el DataFrame de posiciones abiertas.
+    positions = mt5.positions_get()
+
+    # Si no hay posiciones abiertas se anula el resto de la lógica.
+    if positions is None or len(positions) == 0:
+        return None
+
+    # Convertir la tupla de posiciones en un DataFrame.
+    df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
+    # Obtener una lista con los tickets abiertos.
+    tickets = df['ticket'].to_list()
+
+    return tickets
+
 class SlDynamic:
     def __init__(self, pips_sl):
         self.pips_sl = pips_sl
 
     def sl_follower(self):
-        positions = mt5.positions_get()
+        tickets = get_tickets()
 
-        # Si no hay posiciones abiertas se anula el resto de la lógica.
-        if positions is None or len(positions) == 0:
-            return None
-
-        # Convertir la tupla de posiciones en un DataFrame.
-        df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
-        # Obtener una lista con los tickets abiertos.
-        lista_tickets = df['ticket'].to_list()
-
-        for ticket in lista_tickets:
+        for ticket in tickets:
             # Obtenemos información de la posición.
             # 0 - BUY, 1 - SELL.
             posicion = mt5.positions_get(ticket=ticket)[0]
