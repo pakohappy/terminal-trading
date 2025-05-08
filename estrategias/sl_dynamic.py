@@ -3,10 +3,11 @@ import pandas as pd
 import logging
 import time
 
-from pandas.core.interchange.dataframe_protocol import DataFrame
 
-
-def get_tickets() -> DataFrame:
+def get_tickets():
+    """
+    Devuelve una lista con los tickets de las posiciones abiertas.
+    """
     # Obtener el DataFrame de posiciones abiertas.
     positions = mt5.positions_get()
 
@@ -20,6 +21,26 @@ def get_tickets() -> DataFrame:
     tickets = df['ticket'].to_list()
 
     return tickets
+
+def send_order(ticket, sl, tp=None):
+    request = {
+        'action': mt5.TRADE_ACTION_SLTP,
+        'position': ticket,
+        'sl': sl,
+        'tp': tp,
+    }
+    print(request)
+
+    try:
+        result = mt5.order_send(request)
+        if result is not None:
+            logging.info(f"SL_DYNAMIC - Orden enviada: {ticket}->{result.comment}")
+        else:
+            logging.error(f"SL_DYNAMIC - Falló el envío de la orden.")
+    except Exception as error:
+        logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
+
+
 
 class SlDynamic:
     def __init__(self, pips_sl):
@@ -57,26 +78,7 @@ class SlDynamic:
             else:
                 logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
-            request = {
-                'action': mt5.TRADE_ACTION_SLTP,
-                'position': ticket,
-                'sl': new_sl,
-            }
-            print(request)
-
-            if new_sl == 0:
-                print(">>> No es necesario actualizar el STOP LOSS.")
-            else:
-                try:
-                    result = mt5.order_send(request)
-                    if result is not None:
-                        logging.info(f"SL_DYNAMIC - Orden enviada: {posicion.ticket}->{result.comment}")
-                    else:
-                        logging.error(f"SL_DYNAMIC - Falló el envío de la orden.")
-                except Exception as error:
-                    logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
-
-        return None
+            send_order(ticket, new_sl,)
 
 if __name__ == "__main__":
     # Configurar el logging
