@@ -13,12 +13,17 @@ def get_tickets():
 
     # Si no hay posiciones abiertas se anula el resto de la lógica.
     if positions is None or len(positions) == 0:
+        print("No hay posiciones abiertas.")
         return None
 
-    # Convertir la tupla de posiciones en un DataFrame.
-    df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
-    # Obtener una lista con los tickets abiertos.
-    tickets = df['ticket'].to_list()
+    try:
+        # Convertir la tupla de posiciones en un DataFrame.
+        df = pd.DataFrame(list(positions), columns=positions[0]._asdict().keys())
+        # Obtener una lista con los tickets abiertos.
+        tickets = df['ticket'].to_list()
+    except Exception as ex:
+        logging.error(f"SL_DYNAMIC - Error al convertir la tupla de posiciones a DataFrame: {ex}")
+        return None
 
     return tickets
 
