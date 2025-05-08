@@ -28,6 +28,9 @@ def get_tickets():
     return tickets
 
 def send_order(ticket, sl, tp=None):
+    """
+    Función para enviar la orden SL/TP.
+    """
     request = {
         'action': mt5.TRADE_ACTION_SLTP,
         'position': ticket,
@@ -48,42 +51,64 @@ def send_order(ticket, sl, tp=None):
 
 
 class SlDynamic:
-    def __init__(self, pips_sl):
-        self.pips_sl = pips_sl
-
-    def sl_follower(self):
+    """
+    Clase que implementa las estrategias de SL/TP.
+    """
+    @staticmethod
+    def sl_follower(pips_sl):
+        """
+        Estrategia SL follower.
+        - Mantiene el SL a una cantidad de pips determinada.
+        """
         tickets = get_tickets()
 
         for ticket in tickets:
+            new_sl = 0
+
             # Obtenemos información de la posición.
             # 0 - BUY, 1 - SELL.
             posicion = mt5.positions_get(ticket=ticket)[0]
-            new_sl = 0
-
-            #print(ticket_type, price_current, position_profit, symbol)
+            # print(ticket_type, price_current, position_profit, symbol)
             print(f'El stop loss actual es: {posicion.sl}')
-
             # Obtener el symbol de la posición.
             symbol_info = mt5.symbol_info(posicion.symbol)
             # Obtener el punto del símbolo.
             point = symbol_info.point
 
             if posicion.type == 0:
-                new_sl = posicion.price_current - self.pips_sl * point
+                new_sl = posicion.price_current - pips_sl * point
                 if posicion.sl == 0.0:
-                    new_sl = posicion.price_open - self.pips_sl * point
+                    new_sl = posicion.price_open - pips_sl * point
                 if new_sl < posicion.sl:
                     new_sl = posicion.sl
             elif posicion.type == 1:
-                new_sl = posicion.price_current + self.pips_sl * point
+                new_sl = posicion.price_current + pips_sl * point
                 if posicion.sl == 0.0:
-                    new_sl = posicion.price_open + self.pips_sl * point
+                    new_sl = posicion.price_open + pips_sl * point
                 if new_sl > posicion.sl != 0:
                     new_sl = posicion.sl
             else:
                 logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
             send_order(ticket, new_sl,)
+
+    @staticmethod
+    def sl_sma():
+
+        tickets = get_tickets()
+
+        for ticket in tickets:
+            new_sl = 0
+
+            # Obtenemos información de la posición.
+            # 0 - BUY, 1 - SELL.
+            posicion = mt5.positions_get(ticket=ticket)[0]
+            # print(ticket_type, price_current, position_profit, symbol)
+            print(f'El stop loss actual es: {posicion.sl}')
+            # Obtener el symbol de la posición.
+            symbol_info = mt5.symbol_info(posicion.symbol)
+            # Obtener el punto del símbolo.
+            point = symbol_info.point
 
 if __name__ == "__main__":
     # Configurar el logging
