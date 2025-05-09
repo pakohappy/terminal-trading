@@ -1,14 +1,14 @@
 import logging
 import pandas as pd
-from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
-    def macd(self): #todo modificar por completo para que las variables se le pasen a la función
-                    #todo no en la creación del objeto.
-                    #todo La clase solo debe recibir el DataFrame.
+    def macd(self,
+             periodo_rapido=int,
+             periodo_lento=int,
+             periodo_senyal=int) -> int:
         """
         Calcula la tendencia utilizando el MACD (Moving Average Convergence Divergence).
         """
@@ -18,14 +18,14 @@ class Tendencia:
             raise ValueError("El DataFrame debe contener una columna 'Close' para calcular el MACD.")
 
         # Cálculo de las medias móviles.
-        df_ema12 = self.df['close'].ewm(span=self.periodo_rapido, adjust=False).mean()
-        df_ema26 = self.df['close'].ewm(span=self.periodo_lento, adjust=False).mean()
+        df_ema12 = self.df['close'].ewm(span=periodo_rapido, adjust=False).mean()
+        df_ema26 = self.df['close'].ewm(span=periodo_lento, adjust=False).mean()
 
         # Cálculo del MACD.
         self.df['macd'] = df_ema12 - df_ema26
 
         # Cálculo de la señal (EMA de 9 periodos del MACD)
-        self.df['signal'] = self.df['macd'].ewm(span=self.periodo_senyal, adjust=False).mean()
+        self.df['signal'] = self.df['macd'].ewm(span=periodo_senyal, adjust=False).mean()
 
         # Detectar cruces alcistas. (posición larga)
         # La señal se considera alcista cuando el MACD cruza por encima de la señal.
@@ -41,10 +41,10 @@ class Tendencia:
         # Imprimir el último cruce alcista y bajista.
         if ultimo_cruce_alcista:
             logging.info("MACD - Se detectó un cruce alcista.")
-            return 'buy'
+            return 0
         elif ultimo_cruce_bajista:
             logging.info("MACD - Se detectó un cruce bajista.")
-            return 'sell'
+            return 1
         else:
             logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
-            return 'flat'
+            return 2

@@ -129,7 +129,7 @@ class Robot1:
                 logging.error(f"ROBOT1 - Error al obtener las posiciones abiertas: {e}")
 
             if self.posiciones_abiertas >= self.max_posiciones:
-                sl_dynamic(self.sl)
+                SlDynamic(self.sl)
                 logging.info("ROBOT1 - Máximo de posiciones abiertas alcanzado.")
             else:
                 try:
@@ -145,13 +145,8 @@ class Robot1:
 
                 try:
                     # Creamos objeto tendencia y calculamos la senyal con MACD.
-                    tendencia = Tendencia(
-                        self.periodo_rapido,
-                        self.periodo_lento,
-                        self.periodo_senyal,
-                        self.df
-                    )
-                    senyal = tendencia.macd()
+                    tendencia = Tendencia(self.df)
+                    senyal = tendencia.macd(self.periodo_lento, self.periodo_rapido, self.periodo_senyal)
                     logging.info(f"ROBOT1 - Señal obtenida: {senyal}")
                 except Exception as e:
                     logging.error(f"ROBOT1 - Error al obtener la tendencia: {e}")

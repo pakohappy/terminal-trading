@@ -107,6 +107,15 @@ class SlDynamic:
             print(f'El stop loss actual es: {posicion.sl}')
             point = get_point(posicion)
 
+            if posicion.type == 0:
+
+            elif posicion.type == 1:
+
+            else:
+                logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
+
+            send_order(ticket, new_sl,)
+
 if __name__ == "__main__":
     # Configurar el logging
     logging.basicConfig(level=logging.INFO)
