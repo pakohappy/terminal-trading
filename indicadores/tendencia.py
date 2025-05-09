@@ -48,3 +48,31 @@ class Tendencia:
         else:
             logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
             return 2
+
+    def sma(self, periodo=int):
+        """
+        Calcula la tendencia utilizando la SMA (Simple Moving Average).
+        """
+        # Validar que el DataFrame tenga la columna 'close'
+        if 'close' not in self.df.columns:
+            logging.error("SMA - El DataFrame no contiene la columna 'close'.")
+            raise ValueError("El DataFrame debe contener una columna 'close' para calcular la SMA.")
+
+        # Calcular la SMA
+        self.df['sma'] = self.df['close'].rolling(window=periodo).mean()
+
+        # Eliminar filas con NaN
+        self.df = self.df.dropna()
+
+        # Determinar la tendencia
+        self.df['tendencia'] = self.df['close'] > self.df['sma']
+
+        # Obtener la última tendencia
+        ultima_tendencia = self.df['tendencia'].iloc[-1]
+
+        if ultima_tendencia:
+            logging.info("SMA - Tendencia alcista detectada.")
+            return 0  # Tendencia alcista
+        else:
+            logging.info("SMA - Tendencia bajista detectada.")
+            return 1  # Tendencia bajista
