@@ -95,7 +95,7 @@ class SlDynamic:
             send_order(ticket, new_sl,)
 
     @staticmethod
-    def sl_sma():
+    def sl_sma(pip_sl, peridos_sma):
         tickets = get_tickets()
 
         for ticket in tickets:
