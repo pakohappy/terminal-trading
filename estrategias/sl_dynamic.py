@@ -48,7 +48,13 @@ def send_order(ticket, sl, tp=None):
     except Exception as error:
         logging.error(f"SL_DYNAMIC - Error al actualizar SL: {error}")
 
-
+def get_point(posicion):
+    """
+    Obtiene el point de la posición.
+    """
+    symbol_info = mt5.symbol_info(posicion.symbol)
+    point = symbol_info.point
+    return point
 
 class SlDynamic:
     """
@@ -66,14 +72,10 @@ class SlDynamic:
             new_sl = 0
 
             # Obtenemos información de la posición.
-            # 0 - BUY, 1 - SELL.
             posicion = mt5.positions_get(ticket=ticket)[0]
             # print(ticket_type, price_current, position_profit, symbol)
             print(f'El stop loss actual es: {posicion.sl}')
-            # Obtener el symbol de la posición.
-            symbol_info = mt5.symbol_info(posicion.symbol)
-            # Obtener el punto del símbolo.
-            point = symbol_info.point
+            point = get_point(posicion)
 
             if posicion.type == 0:
                 new_sl = posicion.price_current - pips_sl * point
@@ -94,21 +96,16 @@ class SlDynamic:
 
     @staticmethod
     def sl_sma():
-
         tickets = get_tickets()
 
         for ticket in tickets:
             new_sl = 0
 
             # Obtenemos información de la posición.
-            # 0 - BUY, 1 - SELL.
             posicion = mt5.positions_get(ticket=ticket)[0]
             # print(ticket_type, price_current, position_profit, symbol)
             print(f'El stop loss actual es: {posicion.sl}')
-            # Obtener el symbol de la posición.
-            symbol_info = mt5.symbol_info(posicion.symbol)
-            # Obtener el punto del símbolo.
-            point = symbol_info.point
+            point = get_point(posicion)
 
 if __name__ == "__main__":
     # Configurar el logging
