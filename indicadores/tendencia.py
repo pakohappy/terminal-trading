@@ -67,6 +67,9 @@ class Tendencia:
         # Determinar la tendencia
         self.df['tendencia'] = self.df['close'] > self.df['sma']
 
+        #df_sin_nan = df_sin_nan.reset_index(drop=True)
+        #todo reset index.
+
         # Obtener la última tendencia
         ultima_tendencia = self.df['tendencia'].iloc[-1]
 
