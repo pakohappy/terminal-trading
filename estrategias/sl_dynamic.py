@@ -108,9 +108,9 @@ class SlDynamic:
             point = get_point(posicion)
 
             if posicion.type == 0:
-
+                print(posicion.type)#todo borrar
             elif posicion.type == 1:
-
+                print(posicion.type)#todo borrar
             else:
                 logging.info("SL_DYNAMIC - ERROR al obtener el 'type' del ticket.")
 
