@@ -1,15 +1,14 @@
 import logging
 import pandas as pd
-from configuracion.config_loader import ConfigLoader
 
 class Tendencia:
-    def __init__(self, periodo_rapido, periodo_lento, periodo_senyal, df: pd.DataFrame):
-        self.periodo_rapido = periodo_rapido
-        self.periodo_lento = periodo_lento
-        self.periodo_senyal = periodo_senyal
+    def __init__(self, df: pd.DataFrame):
         self.df = df
 
-    def macd(self):
+    def macd(self,
+             periodo_rapido=int,
+             periodo_lento=int,
+             periodo_senyal=int) -> int:
         """
         Calcula la tendencia utilizando el MACD (Moving Average Convergence Divergence).
         """
@@ -19,14 +18,14 @@ class Tendencia:
             raise ValueError("El DataFrame debe contener una columna 'Close' para calcular el MACD.")
 
         # Cálculo de las medias móviles.
-        df_ema12 = self.df['close'].ewm(span=self.periodo_rapido, adjust=False).mean()
-        df_ema26 = self.df['close'].ewm(span=self.periodo_lento, adjust=False).mean()
+        df_ema12 = self.df['close'].ewm(span=periodo_rapido, adjust=False).mean()
+        df_ema26 = self.df['close'].ewm(span=periodo_lento, adjust=False).mean()
 
         # Cálculo del MACD.
         self.df['macd'] = df_ema12 - df_ema26
 
         # Cálculo de la señal (EMA de 9 periodos del MACD)
-        self.df['signal'] = self.df['macd'].ewm(span=self.periodo_senyal, adjust=False).mean()
+        self.df['signal'] = self.df['macd'].ewm(span=periodo_senyal, adjust=False).mean()
 
         # Detectar cruces alcistas. (posición larga)
         # La señal se considera alcista cuando el MACD cruza por encima de la señal.
@@ -42,10 +41,41 @@ class Tendencia:
         # Imprimir el último cruce alcista y bajista.
         if ultimo_cruce_alcista:
             logging.info("MACD - Se detectó un cruce alcista.")
-            return 'buy'
+            return 0
         elif ultimo_cruce_bajista:
             logging.info("MACD - Se detectó un cruce bajista.")
-            return 'sell'
+            return 1
         else:
             logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
-            return 'flat'
+            return 2
+
+    def sma(self, periodo=int):
+        """
+        Calcula la tendencia utilizando la SMA (Simple Moving Average).
+        """
+        # Validar que el DataFrame tenga la columna 'close'
+        if 'close' not in self.df.columns:
+            logging.error("SMA - El DataFrame no contiene la columna 'close'.")
+            raise ValueError("El DataFrame debe contener una columna 'close' para calcular la SMA.")
+
+        # Calcular la SMA
+        self.df['sma'] = self.df['close'].rolling(window=periodo).mean()
+
+        # Eliminar filas con NaN
+        self.df = self.df.dropna()
+
+        # Determinar la tendencia
+        self.df['tendencia'] = self.df['close'] > self.df['sma']
+
+        #df_sin_nan = df_sin_nan.reset_index(drop=True)
+        #todo reset index.
+
+        # Obtener la última tendencia
+        ultima_tendencia = self.df['tendencia'].iloc[-1]
+
+        if ultima_tendencia:
+            logging.info("SMA - Tendencia alcista detectada.")
+            return 0  # Tendencia alcista
+        else:
+            logging.info("SMA - Tendencia bajista detectada.")
+            return 1  # Tendencia bajista

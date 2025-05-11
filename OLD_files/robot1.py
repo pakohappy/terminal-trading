@@ -1,6 +1,7 @@
 """
 -*- coding: utf-8 -*-
 """
+
 # Robot - 1.
 # MACD - Moving Average Convergence Divergence.
 
@@ -9,7 +10,7 @@ import pandas as pd
 import time
 from indicadores.tendencia import Tendencia
 import logging
-from lib_bot.sl_dynamic import sl_dynamic
+from estrategias.sl_dynamic import SlDynamic
 
 
 def initialize_mt5():
@@ -40,7 +41,7 @@ class Robot1:
     """
     Clase Robot 1.
     """
-    DEFAULT_CONFIG_PATH = 'configuracion/config.ini'
+    DEFAULT_CONFIG_PATH = '../configuracion/config.ini'
 
     def __init__(self, cofig_path=DEFAULT_CONFIG_PATH):
         """
@@ -128,7 +129,7 @@ class Robot1:
                 logging.error(f"ROBOT1 - Error al obtener las posiciones abiertas: {e}")
 
             if self.posiciones_abiertas >= self.max_posiciones:
-                sl_dynamic(self.sl)
+                SlDynamic(self.sl)
                 logging.info("ROBOT1 - Máximo de posiciones abiertas alcanzado.")
             else:
                 try:
@@ -144,13 +145,8 @@ class Robot1:
 
                 try:
                     # Creamos objeto tendencia y calculamos la senyal con MACD.
-                    tendencia = Tendencia(
-                        self.periodo_rapido,
-                        self.periodo_lento,
-                        self.periodo_senyal,
-                        self.df
-                    )
-                    senyal = tendencia.macd()
+                    tendencia = Tendencia(self.df)
+                    senyal = tendencia.macd(self.periodo_lento, self.periodo_rapido, self.periodo_senyal)
                     logging.info(f"ROBOT1 - Señal obtenida: {senyal}")
                 except Exception as e:
                     logging.error(f"ROBOT1 - Error al obtener la tendencia: {e}")
