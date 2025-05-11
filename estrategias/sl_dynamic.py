@@ -107,7 +107,7 @@ class SlDynamic:
             print(f'El stop loss actual es: {posicion.sl}')
             point = get_point(posicion)
 
-            if posicion.type == 0:
+            if posicion.type == 0:#todo comparar con 1
                 print(posicion.type)#todo borrar
             elif posicion.type == 1:
                 print(posicion.type)#todo borrar
