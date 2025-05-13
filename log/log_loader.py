@@ -1,8 +1,5 @@
 import logging
 import os
-# from logging.handlers import RotatingFileHandler
-
-# def setup_logging(log_folder="logs", log_file="bot.log", max_bytes=5 * 1024 * 1024, backup_count=15):
 from logging.handlers import TimedRotatingFileHandler
 
 def setup_logging(log_folder="logs", log_file="bot.log", when="midnight", interval=1, backup_count=15):

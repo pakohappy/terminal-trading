@@ -7,4 +7,4 @@ class Protection:
     """
     @staticmethod
     def breakdown(percentage):
-        return pass
+        return None
