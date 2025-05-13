@@ -8,9 +8,9 @@
 import MetaTrader5 as mt5
 import pandas as pd
 import time
-from indicadores.tendencia import Tendencia
+from indicators.Trend import Tendencia
 import logging
-from estrategias.sl_dynamic import SlDynamic
+from strategy.StopsDynamic import SlDynamic
 
 
 def initialize_mt5():
