@@ -58,7 +58,7 @@ def get_point(posicion):
 
 class StopsDynamic:
     """
-    Clase que implementa las strategy de SL/TP.
+    Clase que implementa las estrategias de SL/TP.
     """
     @staticmethod
     def sl_follower(pips_sl):
