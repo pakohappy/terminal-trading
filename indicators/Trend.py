@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-class Tendencia:
+class Trend:
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
@@ -47,7 +47,7 @@ class Tendencia:
             return 1
         else:
             logging.info("MACD - No se detectaron cruces alcistas o bajistas.")
-            return 2
+            return -1
 
     def sma(self, periodo=int):
         """
