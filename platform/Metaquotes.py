@@ -18,9 +18,9 @@ class Metaquotes:
             quit()
 
     @staticmethod
-    def obterner_df(symbol: str, timeframe: int, ult_velas: int) -> pd.DataFrame:
+    def get_df(symbol: str, timeframe: int, ult_velas: int) -> pd.DataFrame:
         """
-        Obiene el DataFrame de las últimas velas(ult_velas) desde MetaTrader 5.
+        Obtiene el DataFrame de las últimas velas(ult_velas) desde MetaTrader 5.
         """
         # Obtener los precios de las últimas velas.
         rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, ult_velas)
@@ -34,7 +34,7 @@ class Metaquotes:
         return rates_df
 
     @staticmethod
-    def abrir_orden(symbol: str, volumen: float, senyal: str):
+    def open_order(symbol: str, volumen: float, signal: str, pips_sl: int, pips_tp: int, deviation: int):
         """
         Función para abrir una orden.
         """
@@ -42,7 +42,7 @@ class Metaquotes:
         tick = mt5.symbol_info_tick(symbol)
         # Obtener la información total del símbolo.
         symbol_info = mt5.symbol_info(symbol)
-
+        #todo modificar la variable signal a 0(buy) y 1(sell).
         order_dict = {'buy': mt5.ORDER_TYPE_BUY, 'sell': mt5.ORDER_TYPE_SELL}
         price_dict = {'buy': tick.ask, 'sell': tick.bid}
 
@@ -53,23 +53,23 @@ class Metaquotes:
         stop_loss = 0
         take_profit = 0
 
-        if order_dict[senyal] == mt5.ORDER_TYPE_BUY:
-            stop_loss = price_dict[senyal] - PIPS_SL * point
-            take_profit = price_dict[senyal] + PIPS_TP * point
+        if order_dict[signal] == mt5.ORDER_TYPE_BUY:
+            stop_loss = price_dict[signal] - pips_sl * point
+            take_profit = price_dict[signal] + pips_tp * point
 
-        if order_dict[senyal] == mt5.ORDER_TYPE_SELL:
-            stop_loss = price_dict[senyal] + PIPS_SL * point
-            take_profit = price_dict[senyal] - PIPS_TP * point
+        if order_dict[signal] == mt5.ORDER_TYPE_SELL:
+            stop_loss = price_dict[signal] + pips_sl * point
+            take_profit = price_dict[signal] - pips_tp * point
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": symbol,
             "volume": volumen,
-            "type": order_dict[senyal],
-            "price": price_dict[senyal],
+            "type": order_dict[signal],
+            "price": price_dict[signal],
             "sl": stop_loss,
             "tp": take_profit,
-            "deviation": DESVIATION,
+            "deviation": deviation,
             "magic": 235711,
             "comment": "python market order",
             "type_time": mt5.ORDER_TIME_GTC,
