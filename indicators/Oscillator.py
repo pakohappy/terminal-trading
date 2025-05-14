@@ -1,1 +1,1 @@
-# Ocillator Indicator.
+# Oscillator Indicator.
