@@ -3,8 +3,8 @@
 """
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
-import logging
 from platform.Metaquotes import Metaquotes as mtq
+import logging
 
 """
 Configuración de Robot 1.
