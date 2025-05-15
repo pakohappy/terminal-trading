@@ -24,15 +24,18 @@ class Oscillator:
         :param mode: Especifica la información que queremos que retorne (por defecto 0).
                     Por defecto devuelve la señal cuando hay un cruce de %K_suavizado y %D,
                     bajista en sobrecompra y alcista en sobreventa.
+                    "mode = 1": Detecta precios en zona de sobreventa/sobrecompra.
         """
         # Validaciones generales.
         if not {'High', 'Low', 'Close'}.issubset(self.df.columns):
-            logging.error("El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
-            raise ValueError("El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
+            logging.error("STOCHASTIC - El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
+            raise ValueError("STOCHASTIC - El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
         if len(self.df) < k_period:
-            raise ValueError("El número de filas no es suficiente para calcular el Indicador Estocástico.")
+            logging.error("STOCHASTIC - El número de filas no es suficiente para calcular el Indicador Estocástico.")
+            raise ValueError("STOCHASTIC - El número de filas no es suficiente para calcular el Indicador Estocástico.")
         if k_period <= 0 or d_period <= 0 or smooth_k <= 0:
-            raise ValueError("Los períodos deben ser mayores que 0.")
+            logging.error("STOCHASTIC - Los períodos deben ser mayores que 0.")
+            raise ValueError("STOCHASTIC - Los períodos deben ser mayores que 0.")
 
         # Calcular valores mínimos y máximos (rango para %K).
         self.df['low_min'] = self.df['Low'].rolling(window=k_period).min()
@@ -84,7 +87,10 @@ class Oscillator:
         # ultimo_cruce_a_la_baja_sobreventa = self.df['cruce_a_la_baja_en_sobreventa'].iloc[-1]
         # ultima_divergencia_alcista = self.df['divergencia_alcista'].iloc[-1]
         # ultima_divergencia_bajista = self.df['divergencia_bajista'].iloc[-1]
+        ultima_sobrecompra = self.df['sobrecompra'].iloc[-1]
+        ultima_sobreventa = self.df['sobreventa'].iloc[-1]
 
+        # Detectamos cruces en zonas de sobrecompra/sobreventa.
         if mode == 0:
             if ultimo_cruce_a_la_baja_sobrecompra:
                 return 0
@@ -92,16 +98,15 @@ class Oscillator:
                 return 1
             else:
                 return -1
+
+        # Detectamos zona de sobrecompra/sobreventa.
+        if mode == 1:
+            if ultima_sobreventa:
+                return 0
+            elif ultima_sobrecompra:
+                return 1
+            else:
+                return -1
+
         else:
             return -1
-        # # Retornar las señales como un entero
-        # if ultimo_cruce_al_alza_sobrecompra or \
-        #         ultimo_cruce_a_la_baja_sobreventa or \
-        #         ultima_divergencia_alcista:
-        #     return 1 # Señal positiva
-        # elif ultimo_cruce_a_la_baja_sobrecompra or \
-        #         ultimo_cruce_al_alza_sobreventa or \
-        #         ultima_divergencia_bajista:
-        #     return 0 # Señal negativa
-        # else:
-        #     return -1 # Sin señal
