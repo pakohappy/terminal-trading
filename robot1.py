@@ -11,7 +11,7 @@ Configuración de Robot 1.
 """
 SYMBOL = 'USDJPY'
 TIMEFRAME = mt5.TIMEFRAME_M5
-ULT_VELAS = 30
+LAST_CANDLES = 30
 PIPS_SL = 50
 PIPS_TP = 100
 DEVIATION = 100
@@ -23,7 +23,7 @@ setup_logging()
 def ejecutar_robot1():
 
     mtq.initialize_mt5()
-    df = mtq.get_df(SYMBOL, TIMEFRAME, ULT_VELAS)
+    df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
     print(df)
     logging.info(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
 

@@ -9,8 +9,9 @@ class Oscillator:
                    k_period: int = 5,
                    d_period: int = 3,
                    smooth_k: int = 3,
-                   sobrecompra_nivel: float = 80,
-                   sobreventa_nivel: float = 20) -> int:
+                   overbought_level: int = 80,
+                   oversold_level: int = 20,
+                   mode: int = 0) -> int:
         """
         Calcula el Indicador Estocástico con suavizado adicional, detecta señales de
         sobrecompra/sobreventa, divergencias y cruces de líneas. Permite ajustar niveles dinámicamente.
@@ -18,9 +19,11 @@ class Oscillator:
         :param k_period: Número de periodos para calcular %K inicial (por defecto 5).
         :param d_period: Número de periodos para calcular %D inicial (por defecto 3).
         :param smooth_k: Período de suavizado adicional aplicado a la línea %K (por defecto 3).
-        :param sobrecompra_nivel: Nivel de sobrecompra personalizado (por defecto 80).
-        :param sobreventa_nivel: Nivel de sobreventa personalizado (por defecto 20).
-        :return: Un diccionario con información detallada sobre el indicador y señales detectadas.
+        :param overbought_level: Nivel de sobrecompra personalizado (por defecto 80).
+        :param oversold_level: Nivel de sobreventa personalizado (por defecto 20).
+        :param mode: Especifica la información que queremos que retorne.#todo
+                    por defecto devuelve la señal cuando hay un cruce de %K_suavizado y %D
+                    en sobrecompra/sobreventa.
         """
         # Validaciones generales
         if not {'High', 'Low', 'Close'}.issubset(self.df.columns):
@@ -49,8 +52,8 @@ class Oscillator:
         self.df.dropna(subset=['%K_suavizado', '%D'], inplace=True)
 
         # Detectar sobrecompra/sobreventa
-        self.df['sobrecompra'] = self.df['%K_suavizado'] > sobrecompra_nivel
-        self.df['sobreventa'] = self.df['%K_suavizado'] < sobreventa_nivel
+        self.df['sobrecompra'] = self.df['%K_suavizado'] > overbought_level
+        self.df['sobreventa'] = self.df['%K_suavizado'] < oversold_level
 
         # Detectar cruces de %K_suavizado y %D
         self.df['cruce_al_alza'] = (self.df['%K_suavizado'].shift(1) < self.df['%D'].shift(1)) & \
