@@ -12,6 +12,7 @@ Configuración de Robot 1.
 """
 SYMBOL = 'USDJPY'
 TIMEFRAME = mt5.TIMEFRAME_M5
+VOLUME = 0.01
 LAST_CANDLES = 30
 PIPS_SL = 50
 PIPS_TP = 100
@@ -29,8 +30,8 @@ def run():
     logging.info(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
     signal = Oscillator.stochastic(df)
 
-    if signal == 0:
-        mtq.open_order(SYMBOL, 1, signal, PIPS_SL, PIPS_TP, DEVIATION)#todo solucionar portabilidad Metaquotes.
-    elif signal == 1:
-        mtq.open_order(SYMBOL, 1, signal, PIPS_SL, PIPS_TP, DEVIATION)
+    if signal == 0 or signal == 1:
+        mtq.open_order(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION)#todo solucionar portabilidad Metaquotes.
+    else:
+        print("No hay signal.")
     return None
