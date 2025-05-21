@@ -33,7 +33,7 @@ class Metaquotes:
 
         return rates_df
 
-    @staticmethod
+    @staticmethod #todo mejorar manejo de 'signal'.
     def open_order(symbol: str, volumen: float, signal: str, pips_sl: int, pips_tp: int, deviation: int):
         """
         Función para abrir una orden.

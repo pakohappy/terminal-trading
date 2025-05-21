@@ -4,6 +4,7 @@
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
 from platform.Metaquotes import Metaquotes as mtq
+from indicators.Oscillator import Oscillator
 import logging
 
 """
@@ -20,11 +21,16 @@ DEVIATION = 100
 setup_logging()
 
 
-def ejecutar_robot1():
+def run():
 
     mtq.initialize_mt5()
     df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
     print(df)
     logging.info(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
+    signal = Oscillator.stochastic(df)
 
+    if signal == 0:
+        mtq.open_order(SYMBOL, 1, signal, PIPS_SL, PIPS_TP, DEVIATION)#todo solucionar portabilidad Metaquotes.
+    elif signal == 1:
+        mtq.open_order(SYMBOL, 1, signal, PIPS_SL, PIPS_TP, DEVIATION)
     return None
