@@ -12,7 +12,7 @@ class Metaquotes:
         """
         Inicializa la conexión con MetaTrader 5.
         """
-        if not mt5.initialize():
+        if not (mt5.initialize()):
             error_code = mt5.last_error()
             logging.error(f"ROBOT1 - Failed to initialize MetaTrader 5, error code = {error_code}")
             quit()
@@ -43,8 +43,8 @@ class Metaquotes:
         # Obtener la información total del símbolo.
         symbol_info = mt5.symbol_info(symbol)
         #todo modificar la variable signal a 0(buy) y 1(sell).
-        order_dict = {'0': mt5.ORDER_TYPE_BUY, '1': mt5.ORDER_TYPE_SELL}
-        price_dict = {'0': tick.ask, '1': tick.bid}
+        order_dict = {0: mt5.ORDER_TYPE_BUY, 1: mt5.ORDER_TYPE_SELL}
+        price_dict = {0: tick.ask, 1: tick.bid}
 
         # Obtener el punto del símbolo.
         point = symbol_info.point
