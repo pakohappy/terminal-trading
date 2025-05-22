@@ -1,6 +1,7 @@
 """
 -*- coding: utf-8 -*-
 """
+import time
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
 from trading_platform.Metaquotes import Metaquotes as mtq
@@ -68,6 +69,8 @@ def run():
 
         else:
             print("No hay posiciones abiertas.")
+
+        time.sleep(1)
 
 if __name__ == "__main__":
     run()
