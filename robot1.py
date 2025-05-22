@@ -54,3 +54,20 @@ def run():
             # display all open positions
             for position in positions:
                 print(position)
+
+                df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
+                indicator = Oscillator(df)
+                signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
+
+                if position.type == 0 and signal == 1:
+                    mt5.Close(position.ticket)
+                elif position.type == 1 and signal == 0:
+                    mt5.Close(position.ticket)
+                else:
+                    print("No hay signal que marque el cierre de la posición.")
+
+        else:
+            print("No hay posiciones abiertas.")
+
+if __name__ == "__main__":
+    run()
