@@ -3,7 +3,7 @@
 """
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
-from platform.Metaquotes import Metaquotes as mtq
+from trading_platform.Metaquotes import Metaquotes as mtq
 from indicators.Oscillator import Oscillator
 
 """
