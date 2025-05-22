@@ -17,6 +17,7 @@ LAST_CANDLES = 30
 PIPS_SL = 50
 PIPS_TP = 100
 DEVIATION = 100
+COMMENT = "Robot 1 Order"
 
 # Stochastic.
 K_PERIOD = 5
@@ -33,6 +34,8 @@ setup_logging()
 def run():
 
     mtq.initialize_mt5()
+
+
     df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
     print(df)
     logging.info(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
@@ -40,7 +43,7 @@ def run():
     signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
 
     if signal == 0 or signal == 1:
-        mtq.open_order(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION)#todo solucionar portabilidad Metaquotes.
+        mtq.open_order(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
     else:
         print("No hay signal.")
     return None

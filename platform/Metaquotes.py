@@ -33,8 +33,8 @@ class Metaquotes:
 
         return rates_df
 
-    @staticmethod #todo mejorar manejo de 'signal'.
-    def open_order(symbol: str, volumen: float, signal: int, pips_sl: int, pips_tp: int, deviation: int):
+    @staticmethod
+    def open_order(symbol: str, volumen: float, signal: int, pips_sl: int, pips_tp: int, deviation: int, comment: str):
         """
         Función para abrir una orden.
         """
@@ -42,7 +42,6 @@ class Metaquotes:
         tick = mt5.symbol_info_tick(symbol)
         # Obtener la información total del símbolo.
         symbol_info = mt5.symbol_info(symbol)
-        #todo modificar la variable signal a 0(buy) y 1(sell).
         order_dict = {0: mt5.ORDER_TYPE_BUY, 1: mt5.ORDER_TYPE_SELL}
         price_dict = {0: tick.ask, 1: tick.bid}
 
@@ -71,7 +70,7 @@ class Metaquotes:
             "tp": take_profit,
             "deviation": deviation,
             "magic": 235711,
-            "comment": "Robot 1 order",
+            "comment": comment,
             "type_time": mt5.ORDER_TIME_GTC,
             "type_filling": mt5.ORDER_FILLING_IOC,
         }
