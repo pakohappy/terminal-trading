@@ -37,10 +37,10 @@ def run():
 
     while True:
         positions = mt5.positions_get(symbol=SYMBOL)
-
-        if positions is None:
+        print(len(positions))
+        if len(positions) == 0:
             df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
-            print(df)
+            #print(df)
             print(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
             indicator = Oscillator(df)
             signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)

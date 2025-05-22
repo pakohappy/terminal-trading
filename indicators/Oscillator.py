@@ -27,7 +27,7 @@ class Oscillator:
                     "mode = 1": Detecta precios en zona de sobreventa/sobrecompra.
         """
         # Validaciones generales.
-        if not {'High', 'Low', 'Close'}.issubset(self.df.columns):
+        if not {'high', 'low', 'close'}.issubset(self.df.columns):
             logging.error("STOCHASTIC - El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
             raise ValueError("STOCHASTIC - El DataFrame debe contener las columnas 'High', 'Low' y 'Close'.")
         if len(self.df) < k_period:
@@ -38,11 +38,11 @@ class Oscillator:
             raise ValueError("STOCHASTIC - Los períodos deben ser mayores que 0.")
 
         # Calcular valores mínimos y máximos (rango para %K).
-        self.df['low_min'] = self.df['Low'].rolling(window=k_period).min()
-        self.df['high_max'] = self.df['High'].rolling(window=k_period).max()
+        self.df['low_min'] = self.df['low'].rolling(window=k_period).min()
+        self.df['high_max'] = self.df['high'].rolling(window=k_period).max()
 
         # Calcular %K inicial.
-        self.df['%K'] = ((self.df['Close'] - self.df['low_min']) /
+        self.df['%K'] = ((self.df['close'] - self.df['low_min']) /
                          (self.df['high_max'] - self.df['low_min'])) * 100
 
         # Suavizar %K.
@@ -72,11 +72,11 @@ class Oscillator:
 
         # Detectar divergencias.
         self.df['divergencia_alcista'] = (
-            (self.df['Close'] < self.df['Close'].shift(1)) &  # Mínimo más bajo en precio
+            (self.df['close'] < self.df['close'].shift(1)) &  # Mínimo más bajo en precio
             (self.df['%K_suavizado'] > self.df['%K_suavizado'].shift(1))  # Mínimo más alto en %K
         )
         self.df['divergencia_bajista'] = (
-            (self.df['Close'] > self.df['Close'].shift(1)) &  # Máximo más alto en precio
+            (self.df['close'] > self.df['close'].shift(1)) &  # Máximo más alto en precio
             (self.df['%K_suavizado'] < self.df['%K_suavizado'].shift(1))  # Máximo más bajo en %K
         )
 
@@ -89,6 +89,13 @@ class Oscillator:
         # ultima_divergencia_bajista = self.df['divergencia_bajista'].iloc[-1]
         ultima_sobrecompra = self.df['sobrecompra'].iloc[-1]
         ultima_sobreventa = self.df['sobreventa'].iloc[-1]
+
+        columnas_print = ['time',
+                          'cruce_a_la_baja_en_sobrecompra',
+                          'cruce_al_alza_en_sobreventa',
+                          'sobrecompra',
+                          'sobreventa']
+        print(self.df[columnas_print])
 
         # Detectamos cruces en zonas de sobrecompra/sobreventa.
         if mode == 0:
