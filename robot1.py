@@ -23,8 +23,8 @@ COMMENT = "Robot 1 Order"
 K_PERIOD = 5
 D_PERIOD = 3
 SMOOTH_K = 3
-OVERBOUGHT_LEVEL = 80
-OVERSOLD_LEVEL = 20
+OVERBOUGHT_LEVEL = 70
+OVERSOLD_LEVEL = 30
 MODE = 0
 
 # Importamos la configuración del logging.
@@ -38,15 +38,17 @@ def run():
     while True:
         positions = mt5.positions_get(symbol=SYMBOL)
         print(len(positions))
-        if len(positions) == 0:
+        if positions is None or len(positions) == 0:
             df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
             #print(df)
             print(f"ROBOT1 - Datos obtenidos desde MetaTrader 5.")
             indicator = Oscillator(df)
             signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
 
-            if signal == 0 or signal == 1:
-                mtq.open_order(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
+            if signal == 0:
+                mtq.open_order_buy(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
+            elif signal == 1:
+                mtq.open_order_sell(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
             else:
                 print("No hay signal.")
 
@@ -60,9 +62,9 @@ def run():
                 indicator = Oscillator(df)
                 signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
 
-                if position.type == 0 and signal == 1:
+                if position.type == mt5.ORDER_TYPE_BUY and signal == 1:
                     mt5.Close(position.ticket)
-                elif position.type == 1 and signal == 0:
+                elif position.type == mt5.POSITION_TYPE_SELL and signal == 2:
                     mt5.Close(position.ticket)
                 else:
                     print("No hay signal que marque el cierre de la posición.")

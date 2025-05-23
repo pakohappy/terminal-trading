@@ -100,7 +100,7 @@ class Oscillator:
         # Detectamos cruces en zonas de sobrecompra/sobreventa.
         if mode == 0:
             if ultimo_cruce_a_la_baja_sobrecompra:
-                return 0
+                return 2
             elif ultimo_cruce_al_alza_sobreventa:
                 return 1
             else:
@@ -109,7 +109,7 @@ class Oscillator:
         # Detectamos zona de sobrecompra/sobreventa.
         if mode == 1:
             if ultima_sobreventa:
-                return 0
+                return 2
             elif ultima_sobrecompra:
                 return 1
             else:
