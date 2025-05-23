@@ -56,18 +56,18 @@ def run():
             print(f"Total positions on {SYMBOL}: ", len(positions))
             # display all open positions
             for position in positions:
-                print(position)
+                print(position)#todo gestinar cierre de órdenes.
 
-                df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
-                indicator = Oscillator(df)
-                signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
-
-                if position.type == mt5.ORDER_TYPE_BUY and signal == 1:
-                    mt5.Close(position.ticket)
-                elif position.type == mt5.POSITION_TYPE_SELL and signal == 2:
-                    mt5.Close(position.ticket)
-                else:
-                    print("No hay signal que marque el cierre de la posición.")
+                # df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
+                # indicator = Oscillator(df)
+                # signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
+                #
+                # if position.type == mt5.ORDER_TYPE_BUY and signal == 1:
+                #     mt5.Close(position.ticket)
+                # elif position.type == mt5.POSITION_TYPE_SELL and signal == 2:
+                #     mt5.Close(position.ticket)
+                # else:
+                #     print("No hay signal que marque el cierre de la posición.")
 
         else:
             print("No hay posiciones abiertas.")
