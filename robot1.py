@@ -53,20 +53,30 @@ def run():
             else:
                 print("No hay signal.")
 
-        elif len(positions) > 0:
-            print(f"Total positions on {SYMBOL}: ", len(positions))
-            # display all open positions
+        elif len(positions) == 1:
             for position in positions:
-                print(position)#todo gestionar cierre de órdenes.
+                df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
+                indicator = Oscillator(df)
+                signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
+
+                if position.type == 0 and signal == 2 or position.type == 1 and signal == 1:
+                    print(">>> No hay señal para abrir una segunda posición.")
+
+                if position.type == 0 and signal == 1:
+                    mtq.open_order_sell(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
+
+                if position.type == 1 and signal == 2:
+                    mtq.open_order_buy(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
+
+        elif len(positions) > 0:
+            for position in positions:
 
                 df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
                 indicator = Oscillator(df)
                 signal = indicator.stochastic(K_PERIOD, D_PERIOD, SMOOTH_K, OVERBOUGHT_LEVEL, OVERSOLD_LEVEL, MODE)
 
-                if position.type == 0 and signal == 1:
-                    mt5.Close(position.ticket)
-                elif position.type == 1 and signal == 2:
-                    mt5.Close(position.ticket)
+                if position.type == 0 and signal == 1 or position.type == 1 and signal == 2:
+                    mtq.close_position(position)
                 else:
                     print ("No hay signal que marque el cierre de la posición.")
 

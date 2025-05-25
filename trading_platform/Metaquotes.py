@@ -108,3 +108,24 @@ class Metaquotes:
         print(order_result)
 
         return order_result
+
+    @staticmethod
+    def close_position(position):
+        tick = mt5.symbol_info_tick(position.symbol)
+
+        request = {
+            "action": mt5.TRADE_ACTION_DEAL,
+            "position": position.ticket,
+            "symbol": position.symbol,
+            "volume": position.volume,
+            "type": mt5.ORDER_TYPE_BUY if position.type == 1 else mt5.ORDER_TYPE_SELL,
+            "price": tick.ask if position.type == 1 else tick.bid,
+            "deviation": 20,
+            "magic": 2357,
+            "comment": "python script close",
+            "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+        }
+
+        result = mt5.order_send(request)
+        return result
