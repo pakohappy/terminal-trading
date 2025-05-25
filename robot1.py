@@ -37,7 +37,8 @@ def run():
 
     while True:
         positions = mt5.positions_get(symbol=SYMBOL)
-        print(len(positions))
+        print(f">>> Hay {len(positions)} posiciones abiertas.")
+        
         if positions is None or len(positions) == 0:
             df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
             #print(df)
@@ -56,7 +57,7 @@ def run():
             print(f"Total positions on {SYMBOL}: ", len(positions))
             # display all open positions
             for position in positions:
-                print(position)#todo gestinar cierre de órdenes.
+                print(position)#todo gestionar cierre de órdenes.
 
                 # df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
                 # indicator = Oscillator(df)
@@ -67,7 +68,7 @@ def run():
                 # elif position.type == mt5.POSITION_TYPE_SELL and signal == 2:
                 #     mt5.Close(position.ticket)
                 # else:
-                #     print("No hay signal que marque el cierre de la posición.")
+                #     print ("No hay signal que marque el cierre de la posición.")
 
         else:
             print("No hay posiciones abiertas.")
