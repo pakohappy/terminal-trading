@@ -20,7 +20,7 @@ DEVIATION = 100
 COMMENT = "Robot 1 Order"
 
 # Stochastic.
-K_PERIOD = 5
+K_PERIOD = 7
 D_PERIOD = 3
 SMOOTH_K = 3
 OVERBOUGHT_LEVEL = 70
@@ -31,7 +31,8 @@ MODE = 0
 setup_logging()
 
 
-def run():
+def run():  #todo hacer que no cierre las posiciones en el cambio de tendencia, a no ser que se salga
+            #todo del espacio de overbought/oversold.
 
     mtq.initialize_mt5()
 
@@ -51,7 +52,7 @@ def run():
             elif signal == 1:
                 mtq.open_order_sell(SYMBOL, VOLUME, signal, PIPS_SL, PIPS_TP, DEVIATION, COMMENT)
             else:
-                print("No hay signal.")
+                print(">>> No hay signal.")
 
         elif len(positions) == 1:
             for position in positions:
