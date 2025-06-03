@@ -99,3 +99,57 @@ class Trend:
 
         # Eliminar filas con NaN
         self.df = self.df.dropna()
+
+        # Detectar cruces y alineación de las medias
+        ultima_fila = self.df.iloc[-1]
+
+        # Verificar alineación alcista (rápida > media > lenta)
+        alineacion_alcista = (ultima_fila['sma_rapido'] > ultima_fila['sma_medio'] > ultima_fila['sma_lento'])
+
+        # Verificar alineación bajista (rápida < media < lenta)
+        alineacion_bajista = (ultima_fila['sma_rapido'] < ultima_fila['sma_medio'] < ultima_fila['sma_lento'])
+
+        # Detectar cruces entre medias
+        self.df['cruce_rapido_medio'] = (
+                (self.df['sma_rapido'].shift(1) <= self.df['sma_medio'].shift(1)) &
+                (self.df['sma_rapido'] > self.df['sma_medio'])
+        )
+
+        self.df['cruce_medio_lento'] = (
+                (self.df['sma_medio'].shift(1) <= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_medio'] > self.df['sma_lento'])
+        )
+
+        # Detectar cruces bajistas
+        self.df['cruce_rapido_medio_bajista'] = (
+                (self.df['sma_rapido'].shift(1) >= self.df['sma_medio'].shift(1)) &
+                (self.df['sma_rapido'] < self.df['sma_medio'])
+        )
+
+        self.df['cruce_medio_lento_bajista'] = (
+                (self.df['sma_medio'].shift(1) >= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_medio'] < self.df['sma_lento'])
+        )
+
+        # Verificar últimos cruces
+        ultimo_cruce_alcista = (
+                self.df['cruce_rapido_medio'].iloc[-1] or
+                self.df['cruce_medio_lento'].iloc[-1]
+        )
+
+        ultimo_cruce_bajista = (
+                self.df['cruce_rapido_medio_bajista'].iloc[-1] or
+                self.df['cruce_medio_lento_bajista'].iloc[-1]
+        )
+
+        # Determinar la señal final
+        if alineacion_alcista or ultimo_cruce_alcista:
+            logging.info("Triple SMA - Se detectó señal alcista.")
+            return 0
+        elif alineacion_bajista or ultimo_cruce_bajista:
+            logging.info("Triple SMA - Se detectó señal bajista.")
+            return 1
+        else:
+            logging.info("Triple SMA - No se detectaron señales claras.")
+            return -1
+
