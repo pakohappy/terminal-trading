@@ -80,7 +80,10 @@ class Trend:
             logging.info("SMA - Tendencia bajista detectada.")
             return 1  # Tendencia bajista
 
-    def triple_sma(self, periodo_lento=int, periodo_medio=int, periodo_rapido=int):
+    def triple_sma(self,
+                   periodo_lento: int=8,
+                   periodo_medio: int=6,
+                   periodo_rapido: int=4):
         """
         Calcula la tendencia utilizando la TRIPE SMA (Triple Moving Average).
         """
