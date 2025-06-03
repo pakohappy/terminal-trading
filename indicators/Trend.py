@@ -79,3 +79,20 @@ class Trend:
         else:
             logging.info("SMA - Tendencia bajista detectada.")
             return 1  # Tendencia bajista
+
+    def triple_sma(self, periodo_lento=int, periodo_medio=int, periodo_rapido=int):
+        """
+        Calcula la tendencia utilizando la TRIPE SMA (Triple Moving Average).
+        """
+        # Validar que el DataFrame tenga la columna 'close'.
+        if 'close' not in self.df.columns:
+            logging.error("SMA - El DataFrame no contiene la columna 'close'.")
+            raise ValueError("El DataFrame debe contener una columna 'close' para calcular la SMA.")
+
+        # Calcular las SMA_lento, SMA_medio y SMA_rapido.
+        self.df['sma_lento'] = self.df['close'].rolling(window=periodo_lento).mean()
+        self.df['sma_medio'] = self.df['close'].rolling(window=periodo_medio).mean()
+        self.df['sma_rapido'] = self.df['close'].rolling(window=periodo_rapido).mean()
+
+        # Eliminar filas con NaN
+        self.df = self.df.dropna()
