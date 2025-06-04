@@ -109,6 +109,38 @@ class Trend:
         # Verificar alineación bajista (rápida < media < lenta)
         alineacion_bajista = (ultima_fila['sma_rapido'] < ultima_fila['sma_medio'] < ultima_fila['sma_lento'])
 
+        # Detectar cruces alcistas entre todas las líneas
+        self.df['cruce_rapido_medio'] = (
+                (self.df['sma_rapido'].shift(1) <= self.df['sma_medio'].shift(1)) &
+                (self.df['sma_rapido'] > self.df['sma_medio'])
+        )
+
+        self.df['cruce_medio_lento'] = (
+                (self.df['sma_medio'].shift(1) <= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_medio'] > self.df['sma_lento'])
+        )
+
+        self.df['cruce_rapido_lento'] = (
+                (self.df['sma_rapido'].shift(1) <= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_rapido'] > self.df['sma_lento'])
+        )
+
+        # Detectar cruces bajistas entre todas las líneas
+        self.df['cruce_rapido_medio_bajista'] = (
+                (self.df['sma_rapido'].shift(1) >= self.df['sma_medio'].shift(1)) &
+                (self.df['sma_rapido'] < self.df['sma_medio'])
+        )
+
+        self.df['cruce_medio_lento_bajista'] = (
+                (self.df['sma_medio'].shift(1) >= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_medio'] < self.df['sma_lento'])
+        )
+
+        self.df['cruce_rapido_lento_bajista'] = (
+                (self.df['sma_rapido'].shift(1) >= self.df['sma_lento'].shift(1)) &
+                (self.df['sma_rapido'] < self.df['sma_lento'])
+        )
+
         # Detectar cruces entre medias
         self.df['cruce_rapido_medio'] = (
                 (self.df['sma_rapido'].shift(1) <= self.df['sma_medio'].shift(1)) &
@@ -129,6 +161,19 @@ class Trend:
         self.df['cruce_medio_lento_bajista'] = (
                 (self.df['sma_medio'].shift(1) >= self.df['sma_lento'].shift(1)) &
                 (self.df['sma_medio'] < self.df['sma_lento'])
+        )
+
+        # Verificar últimos cruces
+        ultimo_cruce_alcista = (
+                self.df['cruce_rapido_medio'].iloc[-1] or
+                self.df['cruce_medio_lento'].iloc[-1] or
+                self.df['cruce_rapido_lento'].iloc[-1]
+        )
+
+        ultimo_cruce_bajista = (
+                self.df['cruce_rapido_medio_bajista'].iloc[-1] or
+                self.df['cruce_medio_lento_bajista'].iloc[-1] or
+                self.df['cruce_rapido_lento_bajista'].iloc[-1]
         )
 
         # Verificar últimos cruces
