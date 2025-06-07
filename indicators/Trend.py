@@ -105,7 +105,7 @@ class Trend:
         self.df['sma_rapido'] = self.df['close'].rolling(window=periodo_rapido).mean()
 
         # Eliminar filas con NaN
-        self.df = self.df.dropna()
+        self.df = self.df.dropna().copy()
 
         # Detectar cruces y alineación de las medias
         ultima_fila = self.df.iloc[-1]
@@ -173,7 +173,7 @@ class Trend:
         # )
 
         # Detectar si, durante una alineación alcista, rápido está por debajo de medio
-        self.df['caida_rapido_respecto_medio'] = (
+        self.df['caida_rapido_respecto_medio'] = (               #todo: comprobar que no estén al revés.
                 (self.df['sma_rapido'] < self.df['sma_medio']) &  # Rápido cae debajo de medio
                 (self.df['sma_rapido'].shift(1) > self.df['sma_medio'].shift(1)) &  # Antes estaba por encima
                 (self.df['sma_medio'] > self.df['sma_lento'])  # Se mantiene la condición de alcista previa
@@ -192,7 +192,6 @@ class Trend:
                 (self.df['sma_rapido'] > self.df['sma_medio']) &  # Rápido sube por encima de medio
                 (self.df['sma_rapido'].shift(1) < self.df['sma_medio'].shift(1)) &  # Antes estaba por debajo
                 (self.df['sma_medio'] < self.df['sma_lento'])
-        # Se mantiene la condición de alineación bajista previa
         )
 
         # Detectar último caso de esta condición
@@ -212,12 +211,10 @@ class Trend:
                 return -1
 
         if mode == 1:
-            if alineacion_bajista:
-                if ultima_subida_rapido_respecto_medio:
-                    return 1
-            elif alineacion_alcista:
-                if ultimo_caida_rapido_respecto_medio:
-                    return 2
+            if ultimo_caida_rapido_respecto_medio or alineacion_bajista:
+                return 2
+            if ultima_subida_rapido_respecto_medio or alineacion_alcista:
+                return 1
             else:
                 return -1
 

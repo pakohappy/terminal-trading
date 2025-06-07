@@ -14,8 +14,8 @@ SYMBOL = 'BTCUSD'
 TIMEFRAME = mt5.TIMEFRAME_M5
 VOLUME = 0.01
 LAST_CANDLES = 20
-PIPS_SL = 50
-PIPS_TP = 70
+PIPS_SL = 100000
+PIPS_TP = 100000
 DEVIATION = 100
 COMMENT = "Robot 2 Order"
 
@@ -54,10 +54,10 @@ def run():
             for position in positions:
 
                 df = mtq.get_df(SYMBOL, TIMEFRAME, LAST_CANDLES)
-                indicator = Trend(df)
-                signal = indicator.triple_sma(PERIODO_LENTO, PERIODO_MEDIO, PERIODO_RAPIDO, 1)
+                indicator_close = Trend(df)
+                signal_close = indicator_close.triple_sma(PERIODO_LENTO, PERIODO_MEDIO, PERIODO_RAPIDO, 1)
 
-                if position.type == 0 and signal == 1 or position.type == 1 and signal == 2:
+                if position.type == 0 and signal_close == 1 or position.type == 1 and signal_close == 2:
                     mtq.close_position(position)
                 else:
                     print ("No hay signal que marque el cierre de la posición.")
