@@ -12,7 +12,7 @@ Configuración de Robot 2.
     Opera usando la comparativa entre tres SMA.
 """
 SYMBOL = 'BTCUSD'
-TIMEFRAME = mt5.TIMEFRAME_M5
+TIMEFRAME = mt5.TIMEFRAME_H1
 VOLUME = 0.01
 LAST_CANDLES = 20
 PIPS_SL = 100000
