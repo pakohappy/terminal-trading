@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-class Trend:
+class BillWilliams:
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
