@@ -43,4 +43,33 @@ class Trend:
         if drop_nan:
             self.df = self.df.dropna(subset=['jaw', 'teeth', 'lips']).copy()
 
-        return self.df
+        # Cálculo de la tendencia alcista (Lips > Teeth > Jaw).
+        self.df['tendencia_alcista'] = (self.df['lips'] > self.df['teeth']) & (self.df['teeth'] > self.df['jaw'])
+        tendencia_alcista = self.df['tendencia_alcista'].iloc[-1]
+
+        # Cálculo de la tendencia bajista (Lips < Teeth < Jaw).
+        self.df['tendencia_bajista'] = (self.df['lips'] < self.df['teeth']) & (self.df['teeth'] < self.df['jaw'])
+        tendencia_bajista = self.df['tendencia_bajista'].iloc[-1]
+
+        #todo: comprobar la separación entre líneas para añadir un nuevo modo.
+        # Calcular las distancias:
+        self.df['dist_jaw_teeth'] = abs(self.df['jaw'] - self.df['teeth'])  # Distancia entre Jaw y Teeth
+        self.df['dist_teeth_lips'] = abs(self.df['teeth'] - self.df['lips'])  # Distancia entre Teeth y Lips
+
+        # Comparar distancias con períodos anteriores (e.g., 1 período atrás)
+        self.df['change_jaw_teeth'] = self.df['dist_jaw_teeth'].diff()  # Diferencia de Jaw-Teeth vs. período anterior
+        self.df['change_teeth_lips'] = self.df['dist_teeth_lips'].diff()  # Diferencia de Teeth-Lips vs. período anterior
+
+        # Comparar si la distancia actual es mayor o menor al período anterior
+        self.df['is_jaw_teeth_growing'] = self.df['change_jaw_teeth'] > 0  # True si aumenta
+        self.df['is_teeth_lips_growing'] = self.df['change_teeth_lips'] > 0  # True si aumenta
+
+        if mode == 0:
+            if tendencia_alcista:
+                return 2
+            elif tendencia_bajista:
+                return 1
+            else:
+                return -1
+
+        return 0
