@@ -13,6 +13,7 @@ class Trend:
                   lips_period: int=5,
                   lips_offset: int=3,
                   drop_nan: bool=True,
+                  percentage: int=100,
                   mode: int=0):
         """
         Calcula las tres líneas del indicador Alligator.
@@ -87,6 +88,12 @@ class Trend:
         # se aproximan a la línea de los dientes(rojo).
         if mode == 2:
             if self.df['is_jaw_teeth_growing'].iloc[-1] and self.df['is_teeth_lips_growing'].iloc[-1]:
+                return 1
+
+        # Detectamos si la línea de los labios(verde) se aproxima a la línea de los dientes(rojo).
+        # Pero ahora de forma percentual.
+        if mode == 3:
+            if self.df['perc_change_teeth_lips'].iloc[-1] > percentage:
                 return 1
 
         return 0
