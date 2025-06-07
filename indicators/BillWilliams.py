@@ -18,7 +18,7 @@ class Trend:
         Calcula las tres líneas del indicador Alligator.
         Los parámetros por defecto son los establecidos por Bill Williams.
 
-        Alcista: lips > teeth > jaw.
+        Alcista: lips(green) > teeth(red) > jaw(blue).
         Bajista: lips < teeth < jaw.
 
         Parámetros:
@@ -51,19 +51,25 @@ class Trend:
         self.df['tendencia_bajista'] = (self.df['lips'] < self.df['teeth']) & (self.df['teeth'] < self.df['jaw'])
         tendencia_bajista = self.df['tendencia_bajista'].iloc[-1]
 
-        #todo: comprobar la separación entre líneas para añadir un nuevo modo.
         # Calcular las distancias:
         self.df['dist_jaw_teeth'] = abs(self.df['jaw'] - self.df['teeth'])  # Distancia entre Jaw y Teeth
         self.df['dist_teeth_lips'] = abs(self.df['teeth'] - self.df['lips'])  # Distancia entre Teeth y Lips
+        self.df['dist_jaw_lips'] = abs(self.df['jaw'] - self.df['lips'])  # Jaw - Lips (opcional)
+
+        # Calcular el cambio porcentual en las distancias
+        self.df['perc_change_jaw_teeth'] = self.df['dist_jaw_teeth'].pct_change() * 100  # % cambio Jaw-Teeth
+        self.df['perc_change_teeth_lips'] = self.df['dist_teeth_lips'].pct_change() * 100  # % cambio Teeth-Lips
+        self.df['perc_change_jaw_lips'] = self.df['dist_jaw_lips'].pct_change() * 100  # % cambio Jaw-Lips
 
         # Comparar distancias con períodos anteriores (e.g., 1 período atrás)
         self.df['change_jaw_teeth'] = self.df['dist_jaw_teeth'].diff()  # Diferencia de Jaw-Teeth vs. período anterior
         self.df['change_teeth_lips'] = self.df['dist_teeth_lips'].diff()  # Diferencia de Teeth-Lips vs. período anterior
 
-        # Comparar si la distancia actual es mayor o menor al período anterior
+        # Comparar si la distancia actual es mayor o menor al período anterior.
         self.df['is_jaw_teeth_growing'] = self.df['change_jaw_teeth'] > 0  # True si aumenta
         self.df['is_teeth_lips_growing'] = self.df['change_teeth_lips'] > 0  # True si aumenta
 
+        # Detectamos tendencia alcista/bajista.
         if mode == 0:
             if tendencia_alcista:
                 return 2
@@ -71,5 +77,16 @@ class Trend:
                 return 1
             else:
                 return -1
+
+        # Detectamos si la línea de los labios(verde) se aproxima a la línea de los dientes(rojo).
+        if mode == 1:
+            if self.df['is_teeth_lips_growing'].iloc[-1]:
+                return 1
+
+        # Detectamos si la línea de los labios(verde) y la línea de la mandíbula(azul)
+        # se aproximan a la línea de los dientes(rojo).
+        if mode == 2:
+            if self.df['is_jaw_teeth_growing'].iloc[-1] and self.df['is_teeth_lips_growing'].iloc[-1]:
+                return 1
 
         return 0
