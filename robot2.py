@@ -9,6 +9,7 @@ from indicators.Trend import Trend
 
 """
 Configuración de Robot 2.
+    Opera usando la comparativa entre tres SMA.
 """
 SYMBOL = 'BTCUSD'
 TIMEFRAME = mt5.TIMEFRAME_M5

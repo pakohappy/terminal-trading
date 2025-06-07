@@ -9,6 +9,7 @@ from indicators.Oscillator import Oscillator
 
 """
 Configuración de Robot 1.
+    Opera usando el oscilador estocástico.
 """
 SYMBOL = 'USDJPY'
 TIMEFRAME = mt5.TIMEFRAME_M5
