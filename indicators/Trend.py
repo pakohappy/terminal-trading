@@ -141,28 +141,6 @@ class Trend:
                 (self.df['sma_rapido'] < self.df['sma_lento'])
         )
 
-        # Detectar cruces entre medias
-        self.df['cruce_rapido_medio'] = (
-                (self.df['sma_rapido'].shift(1) <= self.df['sma_medio'].shift(1)) &
-                (self.df['sma_rapido'] > self.df['sma_medio'])
-        )
-
-        self.df['cruce_medio_lento'] = (
-                (self.df['sma_medio'].shift(1) <= self.df['sma_lento'].shift(1)) &
-                (self.df['sma_medio'] > self.df['sma_lento'])
-        )
-
-        # Detectar cruces bajistas
-        self.df['cruce_rapido_medio_bajista'] = (
-                (self.df['sma_rapido'].shift(1) >= self.df['sma_medio'].shift(1)) &
-                (self.df['sma_rapido'] < self.df['sma_medio'])
-        )
-
-        self.df['cruce_medio_lento_bajista'] = (
-                (self.df['sma_medio'].shift(1) >= self.df['sma_lento'].shift(1)) &
-                (self.df['sma_medio'] < self.df['sma_lento'])
-        )
-
         # Verificar últimos cruces
         ultimo_cruce_alcista = (
                 self.df['cruce_rapido_medio'].iloc[-1] or
