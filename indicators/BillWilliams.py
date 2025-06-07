@@ -6,15 +6,15 @@ class BillWilliams:
         self.df = df
 
     def alligator(self,
-                  jaw_period: int=13,
-                  jaw_offset: int=8,
-                  teeth_period: int=8,
-                  teeth_offset: int=5,
-                  lips_period: int=5,
-                  lips_offset: int=3,
-                  drop_nan: bool=True,
-                  percentage: int=100,
-                  mode: int=0):
+                  jaw_period: int=13,       # Periodo para 'jaw'.
+                  jaw_offset: int=8,        # Desplazamiento para 'jaw'.
+                  teeth_period: int=8,      # Periodo para 'teeth'.
+                  teeth_offset: int=5,      # Desplazamiento para 'teeth'.
+                  lips_period: int=5,       # Periodo para 'lips'.
+                  lips_offset: int=3,       # Desplazamiento para 'lips'.
+                  drop_nan: bool=True,      # True para eliminar NaN resultantes.
+                  percentage: int=100,      # Umbral para comparación de porcentaje.
+                  mode: int=0):             # Modo de operación.
         """
         Calcula las tres líneas del indicador Alligator.
         Los parámetros por defecto son los establecidos por Bill Williams.
