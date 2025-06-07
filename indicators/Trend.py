@@ -211,7 +211,7 @@ class Trend:
             else:
                 return -1
 
-        if mode == 2:
+        if mode == 1:
             if alineacion_bajista:
                 if ultima_subida_rapido_respecto_medio:
                     return 1
