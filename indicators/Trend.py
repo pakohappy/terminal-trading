@@ -83,9 +83,16 @@ class Trend:
     def triple_sma(self,
                    periodo_lento: int=8,
                    periodo_medio: int=6,
-                   periodo_rapido: int=4):
+                   periodo_rapido: int=4,
+                   mode: int=0) -> int:
         """
-        Calcula la tendencia utilizando la TRIPE SMA (Triple Moving Average).
+        Calcula la tendencia utilizando la TRIPLE SMA (Triple Moving Average).
+
+            Default mode = 0.
+                Devuelve la alineación alcista(R>M>L)/bajista(L>M>R).
+            Mode = 1.
+                Devuelve el fin de la tendencia.
+                Fin tendencia, alcista(R<M), bajista(L<M).
         """
         # Validar que el DataFrame tenga la columna 'close'.
         if 'close' not in self.df.columns:
@@ -165,14 +172,55 @@ class Trend:
                 self.df['cruce_medio_lento_bajista'].iloc[-1]
         )
 
-        # Determinar la señal final
-        if alineacion_alcista or ultimo_cruce_alcista:
-            logging.info("Triple SMA - Se detectó señal alcista.")
-            return 0
-        elif alineacion_bajista or ultimo_cruce_bajista:
-            logging.info("Triple SMA - Se detectó señal bajista.")
-            return 1
-        else:
-            logging.info("Triple SMA - No se detectaron señales claras.")
-            return -1
+        # Detectar si, durante una alineación alcista, rápido está por debajo de medio
+        caida_rapido_respecto_medio = (
+                (self.df['sma_rapido'] < self.df['sma_medio']) &  # Rápido cae debajo de medio
+                (self.df['sma_rapido'].shift(1) > self.df['sma_medio'].shift(1)) &  # Antes estaba por encima
+                (self.df['sma_medio'] > self.df['sma_lento'])  # Se mantiene la condición de alcista previa
+        )
+
+        # Detectar último caso de esta condición
+        ultimo_caida_rapido_respecto_medio = caida_rapido_respecto_medio.iloc[-1]
+
+        # Log extra: Si durante una alineación alcista ocurre esta condición
+        if ultimo_caida_rapido_respecto_medio:
+            logging.info(
+                "Triple SMA - Durante la alineación alcista, la media rápida cayó por debajo de la media intermedia.")
+
+        # Detectar si, durante una alineación bajista, la media rápida está por encima de la media intermedia
+        subida_rapido_respecto_medio = (
+                (self.df['sma_rapido'] > self.df['sma_medio']) &  # Rápido sube por encima de medio
+                (self.df['sma_rapido'].shift(1) < self.df['sma_medio'].shift(1)) &  # Antes estaba por debajo
+                (self.df['sma_medio'] < self.df['sma_lento'])
+        # Se mantiene la condición de alineación bajista previa
+        )
+
+        # Detectar último caso de esta condición
+        ultima_subida_rapido_respecto_medio = subida_rapido_respecto_medio.iloc[-1]
+
+        # Log extra: Si durante una alineación bajista ocurre esta condición
+        if ultima_subida_rapido_respecto_medio:
+            logging.info(
+                "Triple SMA - Durante la alineación bajista, la media rápida subió por encima de la media intermedia.")
+
+        if mode == 0:
+            if alineacion_alcista:
+                return 2
+            elif alineacion_bajista:
+                return 1
+            else:
+                return -1
+
+        if mode == 2:
+            if alineacion_bajista:
+                if ultima_subida_rapido_respecto_medio:
+                    return 1
+            elif alineacion_alcista:
+                if ultimo_caida_rapido_respecto_medio:
+                    return 2
+            else:
+                return -1
+
+
+        return 0
 
