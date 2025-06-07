@@ -96,7 +96,7 @@ class Trend:
         """
         # Validar que el DataFrame tenga la columna 'close'.
         if 'close' not in self.df.columns:
-            logging.error("SMA - El DataFrame no contiene la columna 'close'.")
+            logging.error("TRIPLE SMA - El DataFrame no contiene la columna 'close'.")
             raise ValueError("El DataFrame debe contener una columna 'close' para calcular la SMA.")
 
         # Calcular las SMA_lento, SMA_medio y SMA_rapido.
