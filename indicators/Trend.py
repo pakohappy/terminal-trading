@@ -212,9 +212,9 @@ class Trend:
 
         if mode == 1:
             if ultimo_caida_rapido_respecto_medio or alineacion_bajista:
-                return 2
-            if ultima_subida_rapido_respecto_medio or alineacion_alcista:
                 return 1
+            if ultima_subida_rapido_respecto_medio or alineacion_alcista:
+                return 2
             else:
                 return -1
 
