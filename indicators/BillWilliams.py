@@ -1,7 +1,32 @@
+# -*- coding: utf-8 -*-
+"""
+Módulo de indicadores técnicos desarrollados por Bill Williams.
+
+Este módulo implementa los indicadores técnicos desarrollados por Bill Williams,
+un reconocido trader y autor de varios libros sobre trading. Actualmente incluye
+el indicador Alligator, que utiliza tres medias móviles suavizadas y desplazadas
+para identificar tendencias y momentos de "despertar" del mercado.
+
+Referencias:
+    - Bill Williams, "Trading Chaos: Maximize Profits with Proven Technical Techniques"
+    - Bill Williams, "New Trading Dimensions: How to Profit from Chaos in Stocks, Bonds, and Commodities"
+"""
 import logging
+from typing import Optional, Union
 import pandas as pd
 
+
 class BillWilliams:
+    """
+    Clase que implementa los indicadores técnicos desarrollados por Bill Williams.
+    
+    Esta clase proporciona métodos para calcular indicadores como el Alligator,
+    que ayudan a identificar tendencias y puntos de entrada/salida en el mercado.
+    
+    Attributes:
+        df (pd.DataFrame): DataFrame con los datos de precios. Debe contener al menos
+                          una columna 'close' con los precios de cierre.
+    """
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
@@ -14,21 +39,45 @@ class BillWilliams:
                   lips_offset: int=3,       # Desplazamiento para 'lips'.
                   drop_nan: bool=True,      # True para eliminar NaN resultantes.
                   percentage: int=100,      # Umbral para comparación de porcentaje.
-                  mode: int=0):             # Modo de operación.
+                  mode: int=0) -> int:      # Modo de operación.
         """
-        Calcula las tres líneas del indicador Alligator.
-        Los parámetros por defecto son los establecidos por Bill Williams.
-
-        Alcista: lips(green) > teeth(red) > jaw(blue).
-        Bajista: lips < teeth < jaw.
-
-        Parámetros:
-        - jaw_period: Número de períodos para calcular Jaw (Mandíbula).
-        - jaw_offset: Cantidad de períodos de desplazamiento para Jaw.
-        - teeth_period: Número de períodos para calcular Teeth (Dientes).
-        - teeth_offset: Cantidad de períodos de desplazamiento para Teeth.
-        - lips_period: Número de períodos para calcular Lips (Labios).
-        - lips_offset: Cantidad de períodos de desplazamiento para Lips.
+        Calcula el indicador Alligator de Bill Williams y genera señales de trading.
+        
+        El Alligator utiliza tres medias móviles suavizadas y desplazadas para identificar
+        tendencias en el mercado:
+        - Jaw (Mandíbula): Media móvil de período más largo, representada en azul
+        - Teeth (Dientes): Media móvil de período intermedio, representada en rojo
+        - Lips (Labios): Media móvil de período más corto, representada en verde
+        
+        Condiciones de tendencia:
+        - Alcista: lips(verde) > teeth(rojo) > jaw(azul)
+        - Bajista: lips(verde) < teeth(rojo) < jaw(azul)
+        
+        Args:
+            jaw_period: Número de períodos para calcular Jaw (Mandíbula). Por defecto 13.
+            jaw_offset: Cantidad de períodos de desplazamiento para Jaw. Por defecto 8.
+            teeth_period: Número de períodos para calcular Teeth (Dientes). Por defecto 8.
+            teeth_offset: Cantidad de períodos de desplazamiento para Teeth. Por defecto 5.
+            lips_period: Número de períodos para calcular Lips (Labios). Por defecto 5.
+            lips_offset: Cantidad de períodos de desplazamiento para Lips. Por defecto 3.
+            drop_nan: Si es True, elimina las filas con valores NaN resultantes del cálculo. Por defecto True.
+            percentage: Umbral de porcentaje para comparación en el modo 3. Por defecto 100.
+            mode: Modo de operación que determina cómo se generan las señales:
+                  0: Basado en alineación de las líneas (tendencia alcista/bajista)
+                  1: Basado en si la línea de los labios se aproxima a la línea de los dientes
+                  2: Basado en si tanto la mandíbula como los labios se aproximan a los dientes
+                  3: Basado en cambio porcentual entre dientes y labios
+                  Por defecto 0.
+        
+        Returns:
+            int: Señal de trading según el modo seleccionado:
+                 2: Señal de compra (tendencia alcista)
+                 1: Señal de venta (tendencia bajista) o señal específica según el modo
+                 0: Sin señal
+                -1: Sin tendencia clara (solo en modo 0)
+        
+        Raises:
+            ValueError: Si el DataFrame no contiene la columna 'close'.
         """
         # Validar que el DataFrame tenga la columna 'close'.
         if 'close' not in self.df.columns:

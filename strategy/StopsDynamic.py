@@ -1,12 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Módulo de estrategias de stop loss dinámico.
+
+Este módulo implementa diversas estrategias para gestionar stops dinámicos que se
+ajustan automáticamente a medida que el precio se mueve. Los stops dinámicos ayudan
+a proteger las ganancias mientras permiten que las operaciones rentables continúen
+desarrollándose.
+
+Las estrategias implementadas incluyen:
+- Stop Loss Follower: Mantiene el stop loss a una distancia fija del precio actual
+- Stop Loss SMA: Utiliza una media móvil simple como nivel de stop loss (en desarrollo)
+
+Este módulo puede ejecutarse como un script independiente para aplicar la estrategia
+de stop loss follower a todas las posiciones abiertas.
+"""
 import MetaTrader5 as mt5
 import pandas as pd
 import logging
 import time
+from typing import Optional, List, Union, Dict, Any
 
 
-def get_tickets():
+def get_tickets() -> Optional[List[int]]:
     """
-    Devuelve una lista con los tickets de las posiciones abiertas.
+    Obtiene los tickets (identificadores) de todas las posiciones abiertas.
+    
+    Returns:
+        Optional[List[int]]: Lista de tickets de las posiciones abiertas, o None si no hay posiciones
+                           o si ocurre un error al obtener la información.
     """
     # Obtener el DataFrame de posiciones abiertas.
     positions = mt5.positions_get()

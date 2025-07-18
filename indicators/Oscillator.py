@@ -1,7 +1,32 @@
+# -*- coding: utf-8 -*-
+"""
+Módulo de indicadores técnicos de tipo oscilador.
+
+Este módulo implementa indicadores técnicos de tipo oscilador, que fluctúan entre
+valores extremos para identificar condiciones de sobrecompra o sobreventa en el mercado.
+Actualmente incluye el Oscilador Estocástico, que mide la posición del precio actual
+en relación con su rango de precios durante un período determinado.
+
+Los osciladores son especialmente útiles en mercados sin tendencia clara (laterales),
+donde pueden ayudar a identificar puntos de reversión potenciales.
+"""
 import logging
+from typing import Optional, Union
 import pandas as pd
 
+
 class Oscillator:
+    """
+    Clase que implementa indicadores técnicos de tipo oscilador.
+    
+    Esta clase proporciona métodos para calcular osciladores como el Estocástico,
+    que ayudan a identificar condiciones de sobrecompra o sobreventa y posibles
+    puntos de reversión en el mercado.
+    
+    Attributes:
+        df (pd.DataFrame): DataFrame con los datos de precios. Debe contener al menos
+                          columnas 'high', 'low' y 'close' con los precios correspondientes.
+    """
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
@@ -13,18 +38,35 @@ class Oscillator:
                    oversold_level: int = 20,
                    mode: int = 0) -> int:
         """
-        Calcula el Indicador Estocástico con suavizado adicional, detecta señales de
-        sobrecompra/sobreventa, divergencias y cruces de líneas. Permite ajustar niveles dinámicamente.
-
-        :param k_period: Número de periodos para calcular %K inicial (por defecto 5).
-        :param d_period: Número de periodos para calcular %D inicial (por defecto 3).
-        :param smooth_k: Período de suavizado adicional aplicado a la línea %K (por defecto 3).
-        :param overbought_level: Nivel de sobrecompra personalizado (por defecto 80).
-        :param oversold_level: Nivel de sobreventa personalizado (por defecto 20).
-        :param mode: Especifica la información que queremos que retorne (por defecto 0).
-                    Por defecto devuelve la señal cuando hay un cruce de %K_suavizado y %D,
-                    bajista en sobrecompra y alcista en sobreventa.
-                    "mode = 1": Detecta precios en zona de sobreventa/sobrecompra.
+        Calcula el Oscilador Estocástico y genera señales de trading.
+        
+        El Estocástico es un oscilador que mide la posición del precio actual en relación
+        con su rango de precios durante un período determinado. Ayuda a identificar condiciones
+        de sobrecompra o sobreventa, así como posibles divergencias y cruces de líneas.
+        
+        El indicador consta de dos líneas:
+        - %K: La línea principal que mide la posición relativa del precio
+        - %D: Una media móvil de %K que actúa como línea de señal
+        
+        Args:
+            k_period: Número de periodos para calcular %K inicial. Por defecto 5.
+            d_period: Número de periodos para calcular %D (media móvil de %K). Por defecto 3.
+            smooth_k: Período de suavizado adicional aplicado a la línea %K. Por defecto 3.
+            overbought_level: Nivel de sobrecompra personalizado. Por defecto 80.
+            oversold_level: Nivel de sobreventa personalizado. Por defecto 20.
+            mode: Modo de operación que determina cómo se generan las señales:
+                  0: Señales basadas en cruces de %K y %D en zonas de sobrecompra/sobreventa
+                  1: Señales basadas únicamente en zonas de sobrecompra/sobreventa
+                  Por defecto 0.
+        
+        Returns:
+            int: Señal de trading según el modo seleccionado:
+                 2: Señal de compra (cruce al alza en sobreventa o precio en sobreventa)
+                 1: Señal de venta (cruce a la baja en sobrecompra o precio en sobrecompra)
+                -1: Sin señal clara
+        
+        Raises:
+            ValueError: Si el DataFrame no contiene las columnas necesarias o si los parámetros son inválidos.
         """
         # Validaciones generales.
         if not {'high', 'low', 'close'}.issubset(self.df.columns):
@@ -90,12 +132,13 @@ class Oscillator:
         ultima_sobrecompra = self.df['sobrecompra'].iloc[-1]
         ultima_sobreventa = self.df['sobreventa'].iloc[-1]
 
-        columnas_print = ['time',
-                          'cruce_a_la_baja_en_sobrecompra',
-                          'cruce_al_alza_en_sobreventa',
-                          'sobrecompra',
-                          'sobreventa']
-        print(self.df[columnas_print])
+        # Comentado para distribución abierta: código de depuración
+        # columnas_print = ['time',
+        #                   'cruce_a_la_baja_en_sobrecompra',
+        #                   'cruce_al_alza_en_sobreventa',
+        #                   'sobrecompra',
+        #                   'sobreventa']
+        # print(self.df[columnas_print])
 
         # Detectamos cruces en zonas de sobrecompra/sobreventa.
         if mode == 0:
