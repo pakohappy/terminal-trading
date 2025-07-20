@@ -12,7 +12,6 @@ Referencias:
     - Bill Williams, "New Trading Dimensions: How to Profit from Chaos in Stocks, Bonds, and Commodities"
 """
 import logging
-from typing import Optional, Union
 import pandas as pd
 
 

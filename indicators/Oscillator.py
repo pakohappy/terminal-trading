@@ -11,7 +11,6 @@ Los osciladores son especialmente útiles en mercados sin tendencia clara (later
 donde pueden ayudar a identificar puntos de reversión potenciales.
 """
 import logging
-from typing import Optional, Union
 import pandas as pd
 
 

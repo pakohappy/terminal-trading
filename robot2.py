@@ -9,7 +9,6 @@ La estrategia busca oportunidades de compra cuando las medias móviles están al
 (rápida < media < lenta).
 """
 import time
-from typing import Optional, List
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
 from trading_platform.Metaquotes import Metaquotes as mtq

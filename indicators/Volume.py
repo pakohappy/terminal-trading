@@ -15,7 +15,6 @@ Ejemplos de indicadores que podrían implementarse en el futuro:
 - Ease of Movement (EOM)
 """
 import logging
-from typing import Optional, Union
 import pandas as pd
 
 

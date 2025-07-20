@@ -9,7 +9,6 @@ cuando el estocástico sale de la zona de sobreventa y oportunidades de venta cu
 sale de la zona de sobrecompra.
 """
 import time
-from typing import Optional, List
 import MetaTrader5 as mt5
 from log.log_loader import setup_logging
 from trading_platform.Metaquotes import Metaquotes as mtq

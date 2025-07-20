@@ -12,7 +12,6 @@ Los indicadores de tendencia son especialmente útiles en mercados direccionales
 donde pueden ayudar a identificar y seguir la tendencia predominante.
 """
 import logging
-from typing import Optional, Union
 import pandas as pd
 
 
