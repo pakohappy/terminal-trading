@@ -1,8 +1,11 @@
-# Robot de Trading Automatizado
+# Robot de Trading Automatizado basado en terminal
 
+<p style="color: red; font-weight: bold;">
+*** El trading automatizado conlleva riesgos. Este sistema se proporciona con fines educativos y no garantiza beneficios. Utilízalo bajo tu propia responsabilidad y siempre con precaución ***
+</p>
 ## Introducción
 
-Este repositorio contiene un sistema de trading automatizado diseñado para operar en los mercados financieros a través de MetaTrader 5. El sistema está compuesto por varios robots de trading que utilizan diferentes estrategias e indicadores técnicos para identificar oportunidades de compra y venta.
+Este repositorio contiene un sistema de trading automatizado diseñado para operar en los mercados financieros a través de MetaTrader 5. El sistema está compuesto por varios robots de trading a modo de ejemplo, que utilizan diferentes estrategias e indicadores técnicos para identificar oportunidades de compra y venta.
 
 Los robots están diseñados para ser flexibles y configurables, permitiendo ajustar parámetros como el par de divisas, el marco temporal, los niveles de stop-loss y take-profit, y los parámetros específicos de cada indicador técnico.
 
@@ -10,7 +13,7 @@ Los robots están diseñados para ser flexibles y configurables, permitiendo aju
 
 El repositorio está organizado en las siguientes carpetas y archivos:
 
-- **robot1.py, robot2.py, robot3.py**: Implementaciones de diferentes robots de trading con estrategias distintas.
+- **robot1.py, robot2.py, robot3.py**: Implementaciones de diferentes robots de trading a modo de ejemplo con estrategias distintas.
   - `robot1.py`: Utiliza el oscilador estocástico para generar señales.
   - `robot2.py`: Utiliza el indicador Triple SMA (Triple Simple Moving Average) para identificar tendencias.
   - `robot3.py`: Combina el indicador Triple SMA con el Alligator de Bill Williams (preparado para futuras mejoras).
@@ -28,10 +31,6 @@ El repositorio está organizado en las siguientes carpetas y archivos:
   - `Protection.py`: Diseñado para implementar protecciones de capital.
   - `StopsDynamic.py`: Implementa estrategias de stop-loss dinámico.
 
-- **configuracion/**: Contiene archivos de configuración.
-  - `config.ini`: Archivo de configuración principal.
-  - `config_loader.py`: Funciones para cargar y modificar la configuración.
-
 - **log/**: Contiene la configuración y archivos de registro.
   - `log_loader.py`: Configuración del sistema de registro.
   - `logs/`: Directorio donde se almacenan los archivos de registro.
@@ -46,25 +45,6 @@ El repositorio está organizado en las siguientes carpetas y archivos:
 
 ```bash
 pip install -r requirements.txt
-```
-
-### Configuración Básica
-
-1. **Configurar MetaTrader 5**: Abre MetaTrader 5 y configura tu cuenta de trading.
-2. **Ajustar Parámetros**: Modifica el archivo `configuracion/config.ini` según tus preferencias o edita directamente los parámetros en los archivos de los robots.
-
-```ini
-[parametros]
-simbolo = BTCUSD
-timeframe = M1
-cantidad = 30
-stop_loss = 0.5
-lote = 0.01
-deviacion = 5
-
-[horario]
-apertura = 09:00
-cierre = 20:00
 ```
 
 3. **Configurar Logging**: El sistema utiliza un sistema de registro para monitorear la actividad. Los logs se almacenan en `log/logs/bot.log`.
@@ -217,6 +197,8 @@ Las contribuciones son bienvenidas. Si deseas mejorar este sistema, puedes:
 3. Añadir nuevas funcionalidades de gestión de riesgo
 4. Optimizar el rendimiento del sistema
 
-## Descargo de Responsabilidad
+## <span style="color: red;">Descargo de Responsabilidad</span>
 
+<p style="color: red; font-weight: bold;">
 El trading automatizado conlleva riesgos. Este sistema se proporciona con fines educativos y no garantiza beneficios. Utilízalo bajo tu propia responsabilidad y siempre con precaución.
+</p>
