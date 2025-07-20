@@ -183,7 +183,7 @@ python robot3.py  # Ejecutar el robot basado en Triple SMA y Alligator
 ## Recomendaciones y Mejores Prácticas
 
 1. **Pruebas en Modo Demo**: Siempre prueba tus estrategias en una cuenta demo antes de operar con dinero real.
-2. **Backtesting**: Utiliza los notebooks en la carpeta `notebooks/` para realizar backtesting de tus estrategias.
+2. **Backtesting**: Realizar backtesting de tus estrategias.
 3. **Gestión de Riesgo**: Implementa una sólida gestión de riesgo limitando el tamaño de las posiciones y utilizando stop-loss.
 4. **Monitoreo Continuo**: Revisa regularmente los logs para asegurarte de que el robot está funcionando correctamente.
 5. **Mejora Continua**: Ajusta y mejora tus estrategias basándote en los resultados obtenidos.
