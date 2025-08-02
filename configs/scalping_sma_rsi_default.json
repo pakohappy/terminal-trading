@@ -1,0 +1,19 @@
+{
+    "symbol": "EURUSD",
+    "timeframe": 1,
+    "volume": 0.01,
+    "last_candles": 100,
+    "pips_sl": 20,
+    "pips_tp": 30,
+    "deviation": 10,
+    "comment": "Scalping SMA RSI Robot",
+    "periodo_lento": 50,
+    "periodo_medio": 20,
+    "periodo_rapido": 5,
+    "periodo_rsi": 14,
+    "rsi_sobreventa": 30,
+    "rsi_sobrecompra": 70,
+    "max_perdida_diaria": 2.0,
+    "usar_sl_dinamico": true,
+    "periodos_sl_sma": 10
+}
