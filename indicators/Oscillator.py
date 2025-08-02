@@ -20,13 +20,14 @@ Características principales de los osciladores:
 """
 import logging
 import pandas as pd
+import numpy as np
 
 
 class Oscillator:
     """
     Clase que implementa indicadores técnicos de tipo oscilador.
     
-    Esta clase proporciona métodos para calcular osciladores como el Estocástico,
+    Esta clase proporciona métodos para calcular osciladores como el Estocástico y el RSI,
     que ayudan a identificar condiciones de sobrecompra o sobreventa y posibles
     puntos de reversión en el mercado. Los osciladores son herramientas valiosas
     para determinar cuándo un activo puede estar sobrevaluado o infravaluado
@@ -185,4 +186,126 @@ class Oscillator:
             else:
                 return 0
 
+        return 0  # Sin señal clara
+        
+    def rsi(self,
+            period: int = 14,
+            overbought_level: int = 70,
+            oversold_level: int = 30,
+            mode: int = 0) -> int:
+        """
+        Calcula el Índice de Fuerza Relativa (RSI) y genera señales de trading.
+        
+        El RSI es un oscilador de momento que mide la velocidad y el cambio de los movimientos
+        de precio. Desarrollado por J. Welles Wilder en 1978, el RSI oscila entre 0 y 100 y
+        tradicionalmente se considera que un activo está sobrecomprado cuando el RSI supera 70
+        y sobrevendido cuando cae por debajo de 30.
+        
+        El RSI compara la magnitud de las ganancias recientes con la magnitud de las pérdidas
+        recientes para determinar las condiciones de sobrecompra y sobreventa de un activo.
+        
+        La fórmula del RSI es:
+        RSI = 100 - (100 / (1 + RS))
+        donde RS = Promedio de ganancias / Promedio de pérdidas durante un período determinado.
+        
+        Interpretación:
+        - Valores por encima de 70 indican sobrecompra (posible señal de venta)
+        - Valores por debajo de 30 indican sobreventa (posible señal de compra)
+        - El nivel 50 actúa como línea central y puede indicar cambios en la tendencia
+        - Las divergencias entre el precio y el RSI pueden indicar posibles reversiones
+        - El RSI tiende a permanecer en la zona superior durante tendencias alcistas fuertes
+          y en la zona inferior durante tendencias bajistas fuertes
+        
+        Args:
+            period: Número de periodos para calcular el RSI. Por defecto 14.
+            overbought_level: Nivel de sobrecompra personalizado. Por defecto 70.
+            oversold_level: Nivel de sobreventa personalizado. Por defecto 30.
+            mode: Modo de operación que determina cómo se generan las señales:
+                  0: Señales basadas en cruces del RSI con niveles de sobrecompra/sobreventa
+                  1: Señales basadas únicamente en zonas de sobrecompra/sobreventa
+                  Por defecto 0.
+        
+        Returns:
+            int: Señal de trading según el modo seleccionado:
+                 2: Señal de compra (RSI sale de zona de sobreventa o está en sobreventa)
+                 1: Señal de venta (RSI entra en zona de sobrecompra o está en sobrecompra)
+                 0: Sin señal clara
+        
+        Raises:
+            ValueError: Si el DataFrame no contiene la columna 'close' o si los parámetros son inválidos.
+        """
+        # Validaciones generales.
+        if 'close' not in self.df.columns:
+            logging.error("RSI - El DataFrame debe contener la columna 'close'.")
+            raise ValueError("RSI - El DataFrame debe contener la columna 'close'.")
+        if len(self.df) < period + 1:
+            logging.error("RSI - El número de filas no es suficiente para calcular el RSI.")
+            raise ValueError("RSI - El número de filas no es suficiente para calcular el RSI.")
+        if period <= 0:
+            logging.error("RSI - El período debe ser mayor que 0.")
+            raise ValueError("RSI - El período debe ser mayor que 0.")
+            
+        # Calcular cambios en el precio de cierre
+        delta = self.df['close'].diff()
+        
+        # Separar ganancias (cambios positivos) y pérdidas (cambios negativos)
+        gain = delta.where(delta > 0, 0)
+        loss = -delta.where(delta < 0, 0)
+        
+        # Calcular el promedio de ganancias y pérdidas iniciales
+        avg_gain = gain.rolling(window=period).mean()
+        avg_loss = loss.rolling(window=period).mean()
+        
+        # Calcular el RSI
+        rs = avg_gain / avg_loss
+        self.df['RSI'] = 100 - (100 / (1 + rs))
+        
+        # Detectar sobrecompra/sobreventa
+        self.df['rsi_sobrecompra'] = self.df['RSI'] > overbought_level
+        self.df['rsi_sobreventa'] = self.df['RSI'] < oversold_level
+        
+        # Detectar cruces con niveles de sobrecompra/sobreventa
+        self.df['rsi_cruce_sobrecompra_arriba'] = (self.df['RSI'].shift(1) <= overbought_level) & \
+                                                 (self.df['RSI'] > overbought_level)
+        self.df['rsi_cruce_sobrecompra_abajo'] = (self.df['RSI'].shift(1) >= overbought_level) & \
+                                                (self.df['RSI'] < overbought_level)
+        self.df['rsi_cruce_sobreventa_arriba'] = (self.df['RSI'].shift(1) <= oversold_level) & \
+                                               (self.df['RSI'] > oversold_level)
+        self.df['rsi_cruce_sobreventa_abajo'] = (self.df['RSI'].shift(1) >= oversold_level) & \
+                                              (self.df['RSI'] < oversold_level)
+        
+        # Detectar divergencias
+        self.df['rsi_divergencia_alcista'] = (
+            (self.df['close'] < self.df['close'].shift(1)) &  # Mínimo más bajo en precio
+            (self.df['RSI'] > self.df['RSI'].shift(1))  # Mínimo más alto en RSI
+        )
+        self.df['rsi_divergencia_bajista'] = (
+            (self.df['close'] > self.df['close'].shift(1)) &  # Máximo más alto en precio
+            (self.df['RSI'] < self.df['RSI'].shift(1))  # Máximo más bajo en RSI
+        )
+        
+        # Obtener los últimos valores para generar señales
+        ultima_sobrecompra = self.df['rsi_sobrecompra'].iloc[-1]
+        ultima_sobreventa = self.df['rsi_sobreventa'].iloc[-1]
+        ultimo_cruce_sobrecompra_arriba = self.df['rsi_cruce_sobrecompra_arriba'].iloc[-1]
+        ultimo_cruce_sobreventa_arriba = self.df['rsi_cruce_sobreventa_arriba'].iloc[-1]
+        
+        # Detectamos cruces con niveles de sobrecompra/sobreventa
+        if mode == 0:
+            if ultimo_cruce_sobreventa_arriba:
+                return 2  # Señal de compra (RSI sale de zona de sobreventa)
+            elif ultimo_cruce_sobrecompra_arriba:
+                return 1  # Señal de venta (RSI entra en zona de sobrecompra)
+            else:
+                return 0  # Sin señal clara
+        
+        # Detectamos zona de sobrecompra/sobreventa
+        if mode == 1:
+            if ultima_sobreventa:
+                return 2  # Señal de compra (RSI en zona de sobreventa)
+            elif ultima_sobrecompra:
+                return 1  # Señal de venta (RSI en zona de sobrecompra)
+            else:
+                return 0  # Sin señal clara
+                
         return 0  # Sin señal clara
