@@ -1,0 +1,17 @@
+{
+    "robot_type": "stochastic",
+    "symbol": "EURUSD",
+    "timeframe": 16386,
+    "volume": 0.05,
+    "last_candles": 50,
+    "pips_sl": 100,
+    "pips_tp": 300,
+    "deviation": 50,
+    "comment": "Custom Stochastic Robot",
+    "k_period": 8,
+    "d_period": 5,
+    "smooth_k": 2,
+    "overbought_level": 75,
+    "oversold_level": 25,
+    "mode": 1
+}

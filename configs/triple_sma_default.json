@@ -1,0 +1,15 @@
+{
+    "robot_type": "triple_sma",
+    "symbol": "BTCUSD",
+    "timeframe": 16408,
+    "volume": 0.01,
+    "last_candles": 20,
+    "pips_sl": 100000,
+    "pips_tp": 100000,
+    "deviation": 100,
+    "comment": "Triple SMA Robot Order",
+    "periodo_lento": 8,
+    "periodo_medio": 6,
+    "periodo_rapido": 4,
+    "mode": 0
+}

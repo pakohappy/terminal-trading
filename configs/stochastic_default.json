@@ -1,0 +1,17 @@
+{
+    "robot_type": "stochastic",
+    "symbol": "BTCUSD",
+    "timeframe": 16385,
+    "volume": 0.01,
+    "last_candles": 30,
+    "pips_sl": 50000,
+    "pips_tp": 50000,
+    "deviation": 100,
+    "comment": "Stochastic Robot Order",
+    "k_period": 5,
+    "d_period": 3,
+    "smooth_k": 3,
+    "overbought_level": 80,
+    "oversold_level": 20,
+    "mode": 0
+}

@@ -20,8 +20,6 @@ Características principales de los osciladores:
 """
 import logging
 import pandas as pd
-import numpy as np
-
 
 class Oscillator:
     """
@@ -41,7 +39,7 @@ class Oscillator:
     
     Attributes:
         df (pd.DataFrame): DataFrame con los datos de precios. Debe contener al menos
-                          columnas 'high', 'low' y 'close' con los precios correspondientes.
+        columnas 'high', 'low' y 'close' con los precios correspondientes.
     """
     def __init__(self, df: pd.DataFrame):
         self.df = df
