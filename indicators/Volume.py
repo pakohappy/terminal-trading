@@ -13,6 +13,8 @@ Indicadores implementados:
 - Chaikin Money Flow (CMF): Mide la presión de compra/venta durante un período
 - Money Flow Index (MFI): Oscilador que combina precio y volumen (RSI con volumen)
 - Ease of Movement (EOM): Relaciona el cambio de precio con el volumen
+- Chaikin Oscillator: Combina acumulación/distribución con MACD para detectar cambios en la presión de compra/venta
+- Volume Weighted Average Price (VWAP): Precio promedio ponderado por volumen, útil para determinar valor justo
 """
 import logging
 import pandas as pd
@@ -26,6 +28,15 @@ class Volume:
     Esta clase proporciona métodos para calcular indicadores que utilizan
     el volumen de operaciones para generar señales de trading y evaluar
     la fuerza de los movimientos del mercado.
+    
+    Indicadores implementados:
+    - OBV (On-Balance Volume): Acumula volumen en dirección de la tendencia del precio.
+    - VPT (Volume Price Trend): Similar a OBV pero considera la magnitud del cambio de precio.
+    - CMF (Chaikin Money Flow): Mide la presión de compra/venta durante un período.
+    - MFI (Money Flow Index): Oscilador que combina precio y volumen (RSI con volumen).
+    - EOM (Ease of Movement): Relaciona el cambio de precio con el volumen.
+    - Chaikin Oscillator: Combina acumulación/distribución con MACD para detectar cambios en la presión de compra/venta.
+    - VWAP (Volume Weighted Average Price): Precio promedio ponderado por volumen, útil para determinar valor justo.
     
     Attributes:
         df (pd.DataFrame): DataFrame con los datos de precios y volumen. Debe contener
@@ -439,5 +450,86 @@ class Volume:
                 return 2  # Señal de compra
             elif divergencia_bajista:
                 return 1  # Señal de venta
+        
+        return 0  # Sin señal clara
+        
+        
+    def vwap(self, mode: int = 0) -> int:
+        """
+        Calcula el Volume Weighted Average Price (VWAP) y genera señales de trading.
+        
+        El VWAP es un indicador que calcula el precio promedio ponderado por volumen
+        durante un período específico, generalmente un día de trading. Es útil para
+        determinar el precio "justo" o valor de consenso del mercado.
+        
+        El VWAP se calcula como:
+        VWAP = Σ(Precio típico * Volumen) / Σ(Volumen)
+        donde Precio típico = (Alto + Bajo + Cierre) / 3
+        
+        Args:
+            mode: Modo de operación que determina cómo se generan las señales:
+                 0: Basado en la posición del precio respecto al VWAP
+                 1: Basado en cruces del precio con el VWAP
+                 Por defecto 0.
+                 
+        Returns:
+            int: Señal de trading según el modo seleccionado:
+                 2: Señal de compra (precio por debajo del VWAP o cruce alcista)
+                 1: Señal de venta (precio por encima del VWAP o cruce bajista)
+                 0: Sin señal clara
+                 
+        Raises:
+            ValueError: Si el DataFrame no contiene las columnas necesarias.
+        """
+        # Validar que el DataFrame tenga las columnas necesarias
+        if not {'high', 'low', 'close', 'volume'}.issubset(self.df.columns):
+            logging.error("VWAP - El DataFrame debe contener las columnas 'high', 'low', 'close' y 'volume'.")
+            raise ValueError("El DataFrame debe contener las columnas 'high', 'low', 'close' y 'volume' para calcular el VWAP.")
+        
+        # Crear una copia del DataFrame para no modificar el original
+        df_temp = self.df.copy()
+        
+        # Calcular el precio típico
+        df_temp['precio_tipico'] = (df_temp['high'] + df_temp['low'] + df_temp['close']) / 3
+        
+        # Calcular el precio típico ponderado por volumen
+        df_temp['precio_tipico_ponderado'] = df_temp['precio_tipico'] * df_temp['volume']
+        
+        # Calcular el VWAP
+        df_temp['vwap_numerador'] = df_temp['precio_tipico_ponderado'].cumsum()
+        df_temp['vwap_denominador'] = df_temp['volume'].cumsum()
+        df_temp['vwap'] = df_temp['vwap_numerador'] / df_temp['vwap_denominador']
+        
+        # Añadir el VWAP al DataFrame original
+        self.df['vwap'] = df_temp['vwap']
+        
+        # Detectar la posición del precio respecto al VWAP
+        self.df['precio_sobre_vwap'] = self.df['close'] > self.df['vwap']
+        
+        # Detectar cruces del precio con el VWAP
+        self.df['precio_sobre_vwap_prev'] = self.df['precio_sobre_vwap'].shift(1)
+        # Usar operadores lógicos not y and en lugar del operador ~ para evitar problemas con NaN
+        self.df['cruce_alcista_vwap'] = (self.df['precio_sobre_vwap_prev'] == False) & (self.df['precio_sobre_vwap'] == True)
+        self.df['cruce_bajista_vwap'] = (self.df['precio_sobre_vwap_prev'] == True) & (self.df['precio_sobre_vwap'] == False)
+        
+        # Obtener los últimos valores
+        ultimo_precio_sobre_vwap = self.df['precio_sobre_vwap'].iloc[-1]
+        ultimo_cruce_alcista = self.df['cruce_alcista_vwap'].iloc[-1]
+        ultimo_cruce_bajista = self.df['cruce_bajista_vwap'].iloc[-1]
+        
+        # Generar señales según el modo
+        if mode == 0:
+            # Basado en la posición del precio respecto al VWAP
+            if not ultimo_precio_sobre_vwap:
+                return 2  # Señal de compra (precio por debajo del VWAP, posible valor de compra)
+            else:
+                return 1  # Señal de venta (precio por encima del VWAP, posible valor de venta)
+        
+        elif mode == 1:
+            # Basado en cruces del precio con el VWAP
+            if ultimo_cruce_alcista:
+                return 2  # Señal de compra (precio cruza por encima del VWAP)
+            elif ultimo_cruce_bajista:
+                return 1  # Señal de venta (precio cruza por debajo del VWAP)
         
         return 0  # Sin señal clara

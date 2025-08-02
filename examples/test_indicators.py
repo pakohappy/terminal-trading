@@ -8,6 +8,12 @@ implementados funcionen correctamente.
 import pandas as pd
 import numpy as np
 import logging
+import sys
+import os
+
+# Add the parent directory to sys.path to allow imports from the indicators package
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from indicators.Volume import Volume
 from indicators.BillWilliams import BillWilliams
 from indicators.Oscillator import Oscillator
@@ -87,6 +93,16 @@ def probar_indicadores_volumen():
     except Exception as e:
         logging.error(f"Error al calcular EOM: {e}")
     
+    # Probar Chaikin Oscillator (movido a la clase Oscillator)
+    # Este indicador ahora se prueba en la función probar_indicadores_oscillator()
+    
+    # Probar VWAP
+    try:
+        señal_vwap = vol.vwap()
+        logging.info(f"VWAP - Señal generada: {señal_vwap}")
+    except Exception as e:
+        logging.error(f"Error al calcular VWAP: {e}")
+    
     logging.info("Prueba de indicadores de volumen completada.")
 
 def probar_indicadores_tendencia():
@@ -145,6 +161,13 @@ def probar_indicadores_oscillator():
         logging.info(f"RSI - Señal generada: {señal_rsi}")
     except Exception as e:
         logging.error(f"Error al calcular RSI: {e}")
+    
+    # Probar Chaikin Oscillator
+    try:
+        señal_chaikin = osc.chaikin_oscillator()
+        logging.info(f"Chaikin Oscillator - Señal generada: {señal_chaikin}")
+    except Exception as e:
+        logging.error(f"Error al calcular Chaikin Oscillator: {e}")
     
     logging.info("Prueba de indicadores de oscilador completada.")
 
