@@ -36,7 +36,7 @@ def test_create_robot_with_custom_params():
 
 def test_create_robot_from_config():
     """Prueba la creación de un robot desde un archivo de configuración."""
-    config_path = 'configs/stochastic_custom.json'
+    config_path = '../configs/stochastic_custom.json'
     print(f"\n3. Creando robot desde configuración: {config_path}...")
     
     if not os.path.exists(config_path):
