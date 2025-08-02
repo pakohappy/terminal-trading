@@ -13,6 +13,7 @@ generar señales de trading. La implementación del Alligator está preparada pa
 mejoras en la estrategia.
 """
 import MetaTrader5 as mt5
+import logging
 from utils.base import RobotBase
 from indicators.Trend import Trend
 from indicators.BillWilliams import BillWilliams
@@ -176,7 +177,7 @@ class AdvancedRobot(RobotBase):
             if position.type == 0 and signal_close == 1 or position.type == 1 and signal_close == 2:
                 mtq.close_position(position)
             else:
-                print("No hay signal que marque el cierre de la posición.")
+                logging.info(f"{self.__class__.__name__} - No hay signal que marque el cierre de la posición.")
 
 
 # Punto de entrada del programa

@@ -45,6 +45,11 @@ def setup_logging(log_folder="logs", log_file="bot.log", when="midnight", interv
     # Crear un logger
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)  # Nivel global del logger
+    
+    # Verificar si ya hay handlers configurados para evitar duplicación
+    if logger.hasHandlers():
+        # Si ya hay handlers configurados, no hacer nada
+        return
 
     # Formato detallado para los logs
     formatter = logging.Formatter(

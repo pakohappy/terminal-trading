@@ -9,6 +9,7 @@ cuando el estocástico sale de la zona de sobreventa y oportunidades de venta cu
 sale de la zona de sobrecompra.
 """
 import MetaTrader5 as mt5
+import logging
 from utils.base import RobotBase
 from indicators.Oscillator import Oscillator
 
@@ -118,7 +119,7 @@ class StochasticRobot(RobotBase):
 
                 # Si la señal coincide con la posición actual, no hacer nada
                 if position.type == 0 and signal == 2 or position.type == 1 and signal == 1:
-                    print(">>> No hay señal para abrir una segunda posición.")
+                    logging.info(f"{self.__class__.__name__} - No hay señal para abrir una segunda posición.")
 
                 # Si tenemos una posición de compra y hay señal de venta, abrir una posición de venta
                 if position.type == 0 and signal == 1:

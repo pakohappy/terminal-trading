@@ -34,7 +34,10 @@ class Metaquotes:
         Returns:
             bool: True si MetaTrader 5 está inicializado, False en caso contrario.
         """
-        return mt5.terminal_info() is not None
+        logging.debug("Metaquotes - Verificando si MetaTrader 5 está inicializado")
+        is_init = mt5.terminal_info() is not None
+        logging.debug(f"Metaquotes - Estado de inicialización de MetaTrader 5: {is_init}")
+        return is_init
     
     @staticmethod
     def initialize_mt5() -> bool:
@@ -44,16 +47,17 @@ class Metaquotes:
         Returns:
             bool: True si la inicialización fue exitosa, False en caso contrario.
         """
+        logging.debug("Metaquotes - Intentando inicializar MetaTrader 5")
         if Metaquotes.is_initialized():
-            logging.info("MetaTrader 5 ya está inicializado.")
+            logging.info("Metaquotes - MetaTrader 5 ya está inicializado.")
             return True
             
         if not mt5.initialize():
             error_code = mt5.last_error()
-            logging.error(f"Error al inicializar MetaTrader 5, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al inicializar MetaTrader 5, código de error = {error_code}")
             return False
         
-        logging.info("MetaTrader 5 inicializado correctamente.")
+        logging.info("Metaquotes - MetaTrader 5 inicializado correctamente.")
         return True
     
     @staticmethod
@@ -61,8 +65,9 @@ class Metaquotes:
         """
         Cierra la conexión con MetaTrader 5.
         """
+        logging.debug("Metaquotes - Cerrando conexión con MetaTrader 5")
         mt5.shutdown()
-        logging.info("Conexión con MetaTrader 5 cerrada.")
+        logging.info("Metaquotes - Conexión con MetaTrader 5 cerrada.")
     
     @staticmethod
     def get_df(symbol: str, timeframe: int, last_candles: int) -> pd.DataFrame:
@@ -77,11 +82,13 @@ class Metaquotes:
         Returns:
             pd.DataFrame: DataFrame con los datos de precio.
         """
+        logging.debug(f"Metaquotes - Obteniendo {last_candles} velas para {symbol} con timeframe {timeframe}")
+        
         # Obtener precios para las últimas velas
         rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, last_candles)
         if rates is None or len(rates) == 0:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener tasas para {symbol}, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener tasas para {symbol}, código de error = {error_code}")
             return pd.DataFrame()
             
         rates_df = pd.DataFrame(rates)
@@ -91,6 +98,7 @@ class Metaquotes:
         rates_df['time'] = rates_df['time'].dt.tz_localize('UTC').dt.tz_convert(Metaquotes.DEFAULT_TIMEZONE)
         rates_df['time'] = rates_df['time'].dt.strftime('%d-%m-%Y %H:%M:%S')
         
+        logging.debug(f"Metaquotes - Obtenidas {len(rates_df)} velas para {symbol}")
         return rates_df
     
     @staticmethod
@@ -101,13 +109,15 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: Diccionario con información de la cuenta.
         """
+        logging.debug("Metaquotes - Obteniendo información de la cuenta")
+        
         account_info = mt5.account_info()
         if account_info is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener información de la cuenta, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener información de la cuenta, código de error = {error_code}")
             return {}
-            
-        return {
+        
+        result = {
             'balance': account_info.balance,
             'equity': account_info.equity,
             'margin': account_info.margin,
@@ -115,6 +125,9 @@ class Metaquotes:
             'leverage': account_info.leverage,
             'profit': account_info.profit
         }
+        
+        logging.debug(f"Metaquotes - Información de cuenta obtenida: balance={result['balance']}, equity={result['equity']}")
+        return result
     
     @staticmethod
     def get_positions(symbol: Optional[str] = None) -> List:
@@ -128,16 +141,20 @@ class Metaquotes:
             List: Lista de posiciones abiertas.
         """
         if symbol:
+            logging.debug(f"Metaquotes - Obteniendo posiciones para el símbolo {symbol}")
             positions = mt5.positions_get(symbol=symbol)
         else:
+            logging.debug("Metaquotes - Obteniendo todas las posiciones abiertas")
             positions = mt5.positions_get()
             
         if positions is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener posiciones, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener posiciones, código de error = {error_code}")
             return []
-            
-        return list(positions)
+        
+        positions_list = list(positions)
+        logging.debug(f"Metaquotes - Se encontraron {len(positions_list)} posiciones abiertas")
+        return positions_list
     
     @staticmethod
     def _prepare_order_request(
@@ -168,7 +185,11 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: La solicitud de orden preparada.
         """
-        return {
+        order_type_str = "COMPRA" if order_type == mt5.ORDER_TYPE_BUY else "VENTA"
+        logging.debug(f"Metaquotes - Preparando solicitud de orden {order_type_str} para {symbol}")
+        logging.debug(f"Metaquotes - Parámetros: volumen={volume}, precio={price}, SL={sl}, TP={tp}, desviación={deviation}, magic={magic}")
+        
+        request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": symbol,
             "volume": volume,
@@ -182,6 +203,9 @@ class Metaquotes:
             "type_time": mt5.ORDER_TIME_GTC,
             "type_filling": mt5.ORDER_FILLING_IOC,
         }
+        
+        logging.debug("Metaquotes - Solicitud de orden preparada correctamente")
+        return request
     
     @staticmethod
     def open_order(
@@ -212,17 +236,20 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: El resultado de la orden.
         """
+        order_type_str = "COMPRA" if order_type == mt5.ORDER_TYPE_BUY else "VENTA"
+        logging.debug(f"Metaquotes - Intentando abrir orden de {order_type_str} para {symbol}, volumen={volume}, SL={pips_sl} pips, TP={pips_tp} pips")
+        
         # Obtener información del símbolo
         tick = mt5.symbol_info_tick(symbol)
         if tick is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener información de tick para {symbol}, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener información de tick para {symbol}, código de error = {error_code}")
             return {"retcode": -1, "comment": f"Error al obtener información de tick, código de error = {error_code}"}
             
         symbol_info = mt5.symbol_info(symbol)
         if symbol_info is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener información del símbolo para {symbol}, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener información del símbolo para {symbol}, código de error = {error_code}")
             return {"retcode": -1, "comment": f"Error al obtener información del símbolo, código de error = {error_code}"}
             
         price_dict = {2: tick.ask, 1: tick.bid}
@@ -231,6 +258,7 @@ class Metaquotes:
         # Establecer número mágico predeterminado si no se proporciona
         if magic is None:
             magic = Metaquotes.DEFAULT_MAGIC_BUY if order_type == mt5.ORDER_TYPE_BUY else Metaquotes.DEFAULT_MAGIC_SELL
+            logging.debug(f"Metaquotes - Usando número mágico predeterminado: {magic}")
         
         # Calcular stop loss y take profit
         if order_type == mt5.ORDER_TYPE_BUY:
@@ -239,6 +267,8 @@ class Metaquotes:
         else:  # SELL
             stop_loss = price_dict[signal] + pips_sl * point
             take_profit = price_dict[signal] - pips_tp * point
+        
+        logging.debug(f"Metaquotes - Precio de entrada: {price_dict[signal]}, SL: {stop_loss}, TP: {take_profit}")
         
         # Preparar y enviar la solicitud de orden
         request = Metaquotes._prepare_order_request(
@@ -250,10 +280,11 @@ class Metaquotes:
         
         # Registrar el resultado
         if order_result.retcode == mt5.TRADE_RETCODE_DONE:
-            order_type_str = "COMPRA" if order_type == mt5.ORDER_TYPE_BUY else "VENTA"
-            logging.info(f"Orden {order_type_str} ejecutada correctamente: {order_result}")
+            logging.info(f"Metaquotes - Orden {order_type_str} ejecutada correctamente: ticket={order_result.order}, volumen={volume}, precio={price_dict[signal]}")
+            logging.debug(f"Metaquotes - Detalles completos de la orden: {order_result}")
         else:
-            logging.error(f"Orden fallida: {order_result}")
+            logging.error(f"Metaquotes - Orden {order_type_str} fallida: código={order_result.retcode}, comentario={order_result.comment}")
+            logging.debug(f"Metaquotes - Detalles completos del error: {order_result}")
         
         return order_result._asdict()
     
@@ -342,11 +373,22 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: El resultado de la orden.
         """
+        position_type = "VENTA" if position.type == 0 else "COMPRA"
+        logging.debug(f"Metaquotes - Intentando cerrar posición {position.ticket} de {position_type} en {position.symbol}, volumen={position.volume}")
+        
         tick = mt5.symbol_info_tick(position.symbol)
         if tick is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener información de tick para {position.symbol}, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener información de tick para {position.symbol}, código de error = {error_code}")
             return {"retcode": -1, "comment": f"Error al obtener información de tick, código de error = {error_code}"}
+        
+        # Usar el número mágico predeterminado si no se proporciona
+        if magic is None:
+            magic = Metaquotes.DEFAULT_MAGIC_CLOSE
+            logging.debug(f"Metaquotes - Usando número mágico predeterminado para cierre: {magic}")
+        
+        close_price = tick.ask if position.type == 1 else tick.bid
+        logging.debug(f"Metaquotes - Precio de cierre: {close_price}")
         
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -354,9 +396,9 @@ class Metaquotes:
             "symbol": position.symbol,
             "volume": position.volume,
             "type": mt5.ORDER_TYPE_BUY if position.type == 1 else mt5.ORDER_TYPE_SELL,
-            "price": tick.ask if position.type == 1 else tick.bid,
+            "price": close_price,
             "deviation": deviation,
-            "magic": magic or Metaquotes.DEFAULT_MAGIC_CLOSE,
+            "magic": magic,
             "comment": comment,
             "type_time": mt5.ORDER_TIME_GTC,
             "type_filling": mt5.ORDER_FILLING_IOC,
@@ -366,9 +408,12 @@ class Metaquotes:
         
         # Registrar el resultado
         if result.retcode == mt5.TRADE_RETCODE_DONE:
-            logging.info(f"Posición {position.ticket} cerrada correctamente: {result}")
+            profit = position.profit
+            logging.info(f"Metaquotes - Posición {position.ticket} cerrada correctamente: precio={close_price}, beneficio={profit}")
+            logging.debug(f"Metaquotes - Detalles completos del cierre: {result}")
         else:
-            logging.error(f"Error al cerrar posición {position.ticket}: {result}")
+            logging.error(f"Metaquotes - Error al cerrar posición {position.ticket}: código={result.retcode}, comentario={result.comment}")
+            logging.debug(f"Metaquotes - Detalles completos del error: {result}")
         
         return result._asdict()
     
@@ -389,21 +434,33 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: El resultado de la orden.
         """
+        position_type = "VENTA" if position.type == 0 else "COMPRA"
+        current_sl = position.sl
+        current_tp = position.tp
+        new_sl = sl if sl is not None else current_sl
+        new_tp = tp if tp is not None else current_tp
+        
+        logging.debug(f"Metaquotes - Modificando posición {position.ticket} de {position_type} en {position.symbol}")
+        logging.debug(f"Metaquotes - SL actual: {current_sl}, nuevo SL: {new_sl}")
+        logging.debug(f"Metaquotes - TP actual: {current_tp}, nuevo TP: {new_tp}")
+        
         request = {
             "action": mt5.TRADE_ACTION_MODIFY,
             "position": position.ticket,
             "symbol": position.symbol,
-            "sl": sl if sl is not None else position.sl,
-            "tp": tp if tp is not None else position.tp,
+            "sl": new_sl,
+            "tp": new_tp,
         }
         
         result = mt5.order_send(request)
         
         # Registrar el resultado
         if result.retcode == mt5.TRADE_RETCODE_DONE:
-            logging.info(f"Posición {position.ticket} modificada correctamente: {result}")
+            logging.info(f"Metaquotes - Posición {position.ticket} modificada correctamente: SL={new_sl}, TP={new_tp}")
+            logging.debug(f"Metaquotes - Detalles completos de la modificación: {result}")
         else:
-            logging.error(f"Error al modificar posición {position.ticket}: {result}")
+            logging.error(f"Metaquotes - Error al modificar posición {position.ticket}: código={result.retcode}, comentario={result.comment}")
+            logging.debug(f"Metaquotes - Detalles completos del error: {result}")
         
         return result._asdict()
     
@@ -418,13 +475,15 @@ class Metaquotes:
         Returns:
             Dict[str, Any]: Diccionario con información del símbolo.
         """
+        logging.debug(f"Metaquotes - Obteniendo información para el símbolo {symbol}")
+        
         symbol_info = mt5.symbol_info(symbol)
         if symbol_info is None:
             error_code = mt5.last_error()
-            logging.error(f"Error al obtener información del símbolo para {symbol}, código de error = {error_code}")
+            logging.error(f"Metaquotes - Error al obtener información del símbolo para {symbol}, código de error = {error_code}")
             return {}
-            
-        return {
+        
+        result = {
             'name': symbol_info.name,
             'point': symbol_info.point,
             'digits': symbol_info.digits,
@@ -435,3 +494,6 @@ class Metaquotes:
             'volume_max': symbol_info.volume_max,
             'volume_step': symbol_info.volume_step
         }
+        
+        logging.debug(f"Metaquotes - Información obtenida para {symbol}: point={result['point']}, digits={result['digits']}, spread={result['spread']}")
+        return result
