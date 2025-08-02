@@ -8,7 +8,15 @@ Actualmente incluye el Oscilador Estocástico, que mide la posición del precio 
 en relación con su rango de precios durante un período determinado.
 
 Los osciladores son especialmente útiles en mercados sin tendencia clara (laterales),
-donde pueden ayudar a identificar puntos de reversión potenciales.
+donde pueden ayudar a identificar puntos de reversión potenciales. También pueden
+utilizarse para detectar divergencias entre el precio y el indicador, lo que
+puede señalar posibles cambios en la tendencia actual.
+
+Características principales de los osciladores:
+- Fluctúan entre valores extremos (normalmente 0-100 o -100 a +100)
+- Identifican condiciones de sobrecompra (posible venta) y sobreventa (posible compra)
+- Funcionan mejor en mercados laterales o rangos de trading
+- Pueden generar señales falsas en mercados con tendencia fuerte
 """
 import logging
 import pandas as pd
@@ -20,7 +28,15 @@ class Oscillator:
     
     Esta clase proporciona métodos para calcular osciladores como el Estocástico,
     que ayudan a identificar condiciones de sobrecompra o sobreventa y posibles
-    puntos de reversión en el mercado.
+    puntos de reversión en el mercado. Los osciladores son herramientas valiosas
+    para determinar cuándo un activo puede estar sobrevaluado o infravaluado
+    temporalmente.
+    
+    Los osciladores pueden utilizarse de varias formas:
+    - Identificar niveles extremos (sobrecompra/sobreventa)
+    - Detectar cruces de líneas (como %K y %D en el Estocástico)
+    - Encontrar divergencias entre el precio y el oscilador
+    - Confirmar la fuerza de una tendencia
     
     Attributes:
         df (pd.DataFrame): DataFrame con los datos de precios. Debe contener al menos
@@ -43,9 +59,24 @@ class Oscillator:
         con su rango de precios durante un período determinado. Ayuda a identificar condiciones
         de sobrecompra o sobreventa, así como posibles divergencias y cruces de líneas.
         
+        Desarrollado por George Lane en los años 50, el Estocástico se basa en la observación
+        de que durante tendencias alcistas, los precios tienden a cerrar cerca de sus máximos,
+        y durante tendencias bajistas, tienden a cerrar cerca de sus mínimos.
+        
         El indicador consta de dos líneas:
-        - %K: La línea principal que mide la posición relativa del precio
-        - %D: Una media móvil de %K que actúa como línea de señal
+        - %K: La línea principal que mide la posición relativa del precio dentro del rango
+              alto-bajo del período. Se calcula como:
+              %K = 100 * ((Cierre - Mínimo(n)) / (Máximo(n) - Mínimo(n)))
+              donde n es el número de períodos.
+        - %D: Una media móvil de %K que actúa como línea de señal y ayuda a identificar
+              cambios en la dirección del %K.
+        
+        Interpretación:
+        - Valores por encima de 80 indican sobrecompra (posible señal de venta)
+        - Valores por debajo de 20 indican sobreventa (posible señal de compra)
+        - Cruces de %K por encima de %D generan señales alcistas
+        - Cruces de %K por debajo de %D generan señales bajistas
+        - Las divergencias entre el precio y el Estocástico pueden indicar posibles reversiones
         
         Args:
             k_period: Número de periodos para calcular %K inicial. Por defecto 5.
@@ -62,7 +93,7 @@ class Oscillator:
             int: Señal de trading según el modo seleccionado:
                  2: Señal de compra (cruce al alza en sobreventa o precio en sobreventa)
                  1: Señal de venta (cruce a la baja en sobrecompra o precio en sobrecompra)
-                -1: Sin señal clara
+                 0: Sin señal clara
         
         Raises:
             ValueError: Si el DataFrame no contiene las columnas necesarias o si los parámetros son inválidos.
@@ -122,12 +153,9 @@ class Oscillator:
         )
 
         # Señales basadas en cruces y divergencias.
-        # ultimo_cruce_al_alza_sobrecompra = self.df['cruce_al_alza_en_sobrecompra'].iloc[-1]
+        # Obtener los últimos valores para generar señales
         ultimo_cruce_a_la_baja_sobrecompra = self.df['cruce_a_la_baja_en_sobrecompra'].iloc[-1]
         ultimo_cruce_al_alza_sobreventa = self.df['cruce_al_alza_en_sobreventa'].iloc[-1]
-        # ultimo_cruce_a_la_baja_sobreventa = self.df['cruce_a_la_baja_en_sobreventa'].iloc[-1]
-        # ultima_divergencia_alcista = self.df['divergencia_alcista'].iloc[-1]
-        # ultima_divergencia_bajista = self.df['divergencia_bajista'].iloc[-1]
         ultima_sobrecompra = self.df['sobrecompra'].iloc[-1]
         ultima_sobreventa = self.df['sobreventa'].iloc[-1]
 
@@ -146,7 +174,7 @@ class Oscillator:
             elif ultimo_cruce_a_la_baja_sobrecompra:
                 return 1
             else:
-                return -1
+                return 0
 
         # Detectamos zona de sobrecompra/sobreventa.
         if mode == 1:
@@ -155,6 +183,6 @@ class Oscillator:
             elif ultima_sobrecompra:
                 return 1
             else:
-                return -1
+                return 0
 
-        return 0
+        return 0  # Sin señal clara

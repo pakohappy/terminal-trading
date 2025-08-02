@@ -7,6 +7,11 @@ un reconocido trader y autor de varios libros sobre trading. Actualmente incluye
 el indicador Alligator, que utiliza tres medias móviles suavizadas y desplazadas
 para identificar tendencias y momentos de "despertar" del mercado.
 
+El Alligator es una herramienta poderosa para identificar tendencias y evitar
+operar en mercados laterales. Cuando las tres líneas se entrelazan (el "Alligator
+duerme"), es mejor evitar operar. Cuando las líneas se separan (el "Alligator
+despierta y comienza a cazar"), es momento de considerar entrar al mercado.
+
 Referencias:
     - Bill Williams, "Trading Chaos: Maximize Profits with Proven Technical Techniques"
     - Bill Williams, "New Trading Dimensions: How to Profit from Chaos in Stocks, Bonds, and Commodities"
@@ -21,6 +26,13 @@ class BillWilliams:
     
     Esta clase proporciona métodos para calcular indicadores como el Alligator,
     que ayudan a identificar tendencias y puntos de entrada/salida en el mercado.
+    Los indicadores de Bill Williams se basan en la teoría del caos y buscan
+    identificar la estructura fractal de los mercados.
+    
+    El Alligator utiliza tres medias móviles desplazadas para representar:
+    - Mandíbula (Jaw): Media móvil más lenta, representada en azul
+    - Dientes (Teeth): Media móvil intermedia, representada en rojo
+    - Labios (Lips): Media móvil más rápida, representada en verde
     
     Attributes:
         df (pd.DataFrame): DataFrame con los datos de precios. Debe contener al menos
@@ -43,10 +55,23 @@ class BillWilliams:
         Calcula el indicador Alligator de Bill Williams y genera señales de trading.
         
         El Alligator utiliza tres medias móviles suavizadas y desplazadas para identificar
-        tendencias en el mercado:
-        - Jaw (Mandíbula): Media móvil de período más largo, representada en azul
-        - Teeth (Dientes): Media móvil de período intermedio, representada en rojo
-        - Lips (Labios): Media móvil de período más corto, representada en verde
+        tendencias en el mercado. Según Bill Williams, estas líneas representan la mandíbula,
+        los dientes y los labios de un "cocodrilo" que "duerme" durante períodos laterales
+        y "despierta hambriento" cuando comienza una tendencia.
+        
+        Componentes del Alligator:
+        - Jaw (Mandíbula): Media móvil de período más largo, representada en azul.
+          Es la línea más lenta y actúa como soporte/resistencia en tendencias.
+        - Teeth (Dientes): Media móvil de período intermedio, representada en rojo.
+          Confirma la dirección de la tendencia.
+        - Lips (Labios): Media móvil de período más corto, representada en verde.
+          Es la línea más sensible a los cambios de precio recientes.
+        
+        Interpretación:
+        - Cuando las tres líneas se entrelazan: El Alligator "duerme" (mercado lateral).
+          Se recomienda no operar o hacerlo con precaución.
+        - Cuando las líneas se separan: El Alligator "despierta" (comienza una tendencia).
+          Es momento de considerar entrar al mercado.
         
         Condiciones de tendencia:
         - Alcista: lips(verde) > teeth(rojo) > jaw(azul)
@@ -72,8 +97,7 @@ class BillWilliams:
             int: Señal de trading según el modo seleccionado:
                  2: Señal de compra (tendencia alcista)
                  1: Señal de venta (tendencia bajista) o señal específica según el modo
-                 0: Sin señal
-                -1: Sin tendencia clara (solo en modo 0)
+                 0: Sin señal clara (cuando no hay alineación alcista ni bajista)
         
         Raises:
             ValueError: Si el DataFrame no contiene la columna 'close'.
@@ -125,7 +149,7 @@ class BillWilliams:
             elif tendencia_bajista:
                 return 1
             else:
-                return -1
+                return 0
 
         # Detectamos si la línea de los labios(verde) se aproxima a la línea de los dientes(rojo).
         if mode == 1:

@@ -298,3 +298,7 @@ fabric.properties
 
 # Logs.
 log/logs
+/errores_mejoras.md
+/test_indicators.py
+/RESUMEN_CAMBIOS.md
+/lista_cambios.md
